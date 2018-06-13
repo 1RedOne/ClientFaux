@@ -1,3 +1,5 @@
+![ClientFaux logo, think 'sly like a fox'](https://foxdeploy.files.wordpress.com/2018/06/clientfaux-1.png)
+
 # AddCMClients
 A tool for adding fake clients to ConfigMgr for collection querying, testing and reporting
 
