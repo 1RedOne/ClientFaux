@@ -16,6 +16,9 @@ namespace SimulateClient
         private static readonly HttpSender Sender = new HttpSender();
         private static string clientName;
         private static string pass;
+        private static string SiteCode;
+        private static string MPHostName;
+
         private static void Initialize()
         {
             Sender.OnSend += OnSend;
@@ -25,7 +28,7 @@ namespace SimulateClient
 
         private static void Help()
         {
-            Console.WriteLine("{0} <MP Hostname> <SiteCode> [-v]", Environment.GetCommandLineArgs()[0]);
+            Console.WriteLine("{0} <ClientName> <certPW> <SiteCode> <HostName> [-v]", Environment.GetCommandLineArgs()[0]);
             Console.WriteLine("-v: verbose");
             Environment.Exit(1);
         }
@@ -33,28 +36,31 @@ namespace SimulateClient
         static void Main(string[] args)
 
         {
-            if (args.Length < 1)
+            if (args.Length < 3)
             {
                 Help();
             }
 
             clientName = args[0];
             pass = args[1];
+            SiteCode = args[2];
+            MPHostName = args[3];
+
             // Creates the text file that the trace listener will write to.
             System.IO.FileStream myTraceLog = new System.IO.FileStream("C:\\temp\\myTraceLog3.txt", System.IO.FileMode.OpenOrCreate);
             // Creates the new trace listener.
             System.Diagnostics.TextWriterTraceListener myListener = new System.Diagnostics.TextWriterTraceListener(myTraceLog);
             Trace.Listeners.Add(myListener);
 
-           
-            string DomainName = "FoxDeploy.local";
-            string MPHostname = "SCCM.FoxDeploy.local";
-            string SiteCode = "F0X";
+            //string DomainName = "FoxDeploy.local";
+            string DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
+            string CMServerName = MPHostName +"." + DomainName;
+            
             String machineName = System.Environment.MachineName;
             Console.WriteLine("Running on system[" + machineName + "], registering as [" + clientName + "]");
 
             //string ClientName = machineName;
-            SimulateClient(MPHostname, clientName, DomainName, SiteCode);
+            SimulateClient(CMServerName, clientName, DomainName, SiteCode);
 
         }
 
@@ -93,7 +99,7 @@ namespace SimulateClient
             }
         }
 
-        static void SimulateClient(string MPHostname, string ClientName, string DomainName, string SiteCode)
+        static void SimulateClient(string CMServerName, string ClientName, string DomainName, string SiteCode)
         {
             //HttpSender sender = new HttpSender();
 
@@ -136,9 +142,9 @@ namespace SimulateClient
                 registrationRequest.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 
                 // Set the destination hostname
-                registrationRequest.Settings.HostName = MPHostname;
+                registrationRequest.Settings.HostName = CMServerName;
 
-                Console.WriteLine("Trying to reach: " + MPHostname);
+                Console.WriteLine("Trying to reach: " + CMServerName);
 
                 // Discover local properties for registration metadata
                 registrationRequest.Discover();
@@ -185,7 +191,7 @@ namespace SimulateClient
                 Console.WriteLine("ddrSettings ADSiteNa: " + ddrMessage.ADSiteName);
                 Console.WriteLine("ddrSettings DomainNa: " + ddrMessage.DomainName);
                 Console.WriteLine("ddrSettings FakeName: " + ddrMessage.NetBiosName);
-                Console.WriteLine("Message MPHostName  : " + MPHostname);
+                Console.WriteLine("Message MPHostName  : " + CMServerName);
 
                 // Now create inventory records from the discovered data (optional)
                 ddrMessage.Discover();
@@ -193,13 +199,13 @@ namespace SimulateClient
                 // Add our certificate for message signing
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing);
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Encryption);
-                ddrMessage.Settings.HostName = MPHostname;
+                ddrMessage.Settings.HostName = CMServerName;
                 // Now send the message to the MP (it's asynchronous so there won't be a reply)
                 ddrMessage.SendMessage(Sender);
 
 
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
-                hinvMessage.Settings.HostName = MPHostname;
+                hinvMessage.Settings.HostName = CMServerName;
                 hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 hinvMessage.SmsId = clientId;
                 hinvMessage.SiteCode = SiteCode;
