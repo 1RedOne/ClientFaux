@@ -11,18 +11,23 @@ This tool depends on you having the [ConfigMgr SDK](https://www.microsoft.com/en
 2. Copy the following Microsoft.ConfigurationManagement.Messaging.dll file to the same location where you've placed the binary for this project.  Default location for the needed DLL file is `C:\Program Files (x86)\Microsoft System Center 2012 R2 Configuration Manager SDK\Redistributables\Microsoft.ConfigurationManagement.Messaging.dll`  
 3. (e.g. If you place these files under C:\Git\AddCMClients, then place the .dll in that location as well)
 4. Ensure your ConfigMgr instance is configured to 'Approve all Clients' 
+5. Run the binary with the following syntax
 
+````powershell
+AddClients.exe ham Pa$$word! F0x SCCM
+````
 Now you're ready to use AddCMClients!
 
 
 
 #### What's here
 
-| Version  |  Feature | 
-|---|---|
-| No more hardcoded variables!  | [v0.1-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha) |
-| Flexible Cert Path  | next  |
-|  WPF GUI | v2.0  |
-| PowerShell Cmdlet? | v3.0|
+| Feature  |  Version | Done? |
+|---|---|---|
+| No more hardcoded variables!  | [v0.1-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha) |✔️|
+| No more hardcoded paths  | v0.2-alpha  |✔️|
+| Flexible Cert Path  | next  |---|
+|  WPF GUI | v2.0  |---|
+| PowerShell Cmdlet? | v3.0|---|
 
 *tested on ConfigrMgr Current Branch v1802*

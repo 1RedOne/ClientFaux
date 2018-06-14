@@ -5,6 +5,7 @@ using Microsoft.ConfigurationManagement.Messaging.Messages;
 using Microsoft.ConfigurationManagement.Messaging.Sender.Http;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using System.Reflection;
 
 namespace SimulateClient
 
@@ -46,16 +47,33 @@ namespace SimulateClient
             SiteCode = args[2];
             MPHostName = args[3];
 
-            // Creates the text file that the trace listener will write to.
-            System.IO.FileStream myTraceLog = new System.IO.FileStream("C:\\temp\\myTraceLog3.txt", System.IO.FileMode.OpenOrCreate);
+            // Creates the text file that the trace listener will write to. @"FolderIcon\Folder.ico"
+            var outPutDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var logPath = outPutDirectory + "\\ClientFauxLogs.txt";
+            Console.WriteLine("Logging to: " + logPath);
+            System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
+            
             // Creates the new trace listener.
             System.Diagnostics.TextWriterTraceListener myListener = new System.Diagnostics.TextWriterTraceListener(myTraceLog);
             Trace.Listeners.Add(myListener);
 
-            //string DomainName = "FoxDeploy.local";
+            //Get the domain name and cert path
             string DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             string CMServerName = MPHostName +"." + DomainName;
+            string CertPath = outPutDirectory + "\\MixedModeTestCert.pfx";
             
+            //check for a cert file, if we don't see it, give up
+            if (File.Exists(CertPath))
+            {
+                Console.WriteLine("Found cert file at " + CertPath);
+            }
+            else
+            {
+                Console.WriteLine("Could not find a cert PFX file at " + CertPath);
+                return;
+            }
+
+
             String machineName = System.Environment.MachineName;
             Console.WriteLine("Running on system[" + machineName + "], registering as [" + clientName + "]");
 
