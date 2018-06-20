@@ -16,6 +16,7 @@ namespace SimulateClient
     {
         private static readonly HttpSender Sender = new HttpSender();
         private static string clientName;
+        private static string CertPath;
         private static string pass;
         private static string SiteCode;
         private static string MPHostName;
@@ -43,13 +44,15 @@ namespace SimulateClient
             }
 
             clientName = args[0];
-            pass = args[1];
-            SiteCode = args[2];
-            MPHostName = args[3];
+            CertPath = args[1];
+            pass = args[2];
+            SiteCode = args[3];
+            MPHostName = args[4];
 
             // Creates the text file that the trace listener will write to. @"FolderIcon\Folder.ico"
             var outPutDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var logPath = outPutDirectory + "\\ClientFauxLogs.txt";
+            var Tick = DateTime.Now.Ticks.GetHashCode().ToString("x").ToUpper();
+            var logPath = outPutDirectory + "\\ClientFaux_" + Tick + ".txt";
             Console.WriteLine("Logging to: " + logPath);
             System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
             
@@ -60,7 +63,7 @@ namespace SimulateClient
             //Get the domain name and cert path
             string DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             string CMServerName = MPHostName +"." + DomainName;
-            string CertPath = outPutDirectory + "\\MixedModeTestCert.pfx";
+            //string CertPath = outPutDirectory + "\\MixedModeTestCert.pfx";
             
             //check for a cert file, if we don't see it, give up
             if (File.Exists(CertPath))
@@ -123,10 +126,10 @@ namespace SimulateClient
 
             // Load the certificate for client authentication
             //Password for excerpted cert
-            using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile("c:\\temp\\MixedModeTestCert.pfx", pass))
+            using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
-                X509Certificate2 thisCert = new X509Certificate2("c:\\temp\\MixedModeTestCert.pfx", pass);
+                X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
                                 
                 Console.WriteLine(@"Using certificate for client authentication with thumbprint of '{0}'", certificate.Thumbprint);
@@ -221,7 +224,8 @@ namespace SimulateClient
                 // Now send the message to the MP (it's asynchronous so there won't be a reply)
                 ddrMessage.SendMessage(Sender);
 
-
+                //todo add as a param 
+                /*
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
                 hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
@@ -235,7 +239,7 @@ namespace SimulateClient
                 hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_Processor", @"root\cimv2\sms", "SMS_Processor"));
                 hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_SystemDevices", @"root\cimv2\sms", "SMS_SystemDevices"));
                 hinvMessage.SendMessage(Sender);
-                Console.WriteLine("Sending: " + hinvMessage.HardwareInventoryInstances.Count + "instances of HWinv data to CM");
+                Console.WriteLine("Sending: " + hinvMessage.HardwareInventoryInstances.Count + "instances of HWinv data to CM");*/
             }
         }
     }
