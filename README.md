@@ -11,13 +11,59 @@ This tool depends on you having the [ConfigMgr SDK](https://www.microsoft.com/en
 2. Copy the following Microsoft.ConfigurationManagement.Messaging.dll file to the same location where you've placed the binary for this project.  Default location for the needed DLL file is `C:\Program Files (x86)\Microsoft System Center 2012 R2 Configuration Manager SDK\Redistributables\Microsoft.ConfigurationManagement.Messaging.dll`  
 3. (e.g. If you place these files under C:\Git\AddCMClients, then place the .dll in that location as well)
 4. Ensure your ConfigMgr instance is configured to 'Approve all Clients' 
+5. Create a Self-Signed cert by running PowerShell as admin and running the following
+
+````powershell
+
+$newCert = New-SelfSignedCertificate `
+    -KeyLength 2048 `
+    -HashAlgorithm "SHA256" `
+    -Provider  "Microsoft Enhanced RSA and AES Cryptographic Provider" `
+    -KeyExportPolicy Exportable -KeySpec KeyExchange `
+    -Subject 'SCCM Test Certificate' -KeyUsageProperty All -Verbose 
+    
+    start-sleep -Milliseconds 650
+
+    $pwd = ConvertTo-SecureString -String 'Pa$$w0rd!' -Force -AsPlainText
+
+Export-PfxCertificate -cert cert:\localMachine\my\$($newCert.Thumbprint) -FilePath c:\temp\MixedModeTestCert.pfx -Password $pwd -Verbose
+````
 5. Run the binary with the following syntax
 
 ````powershell
-AddClients.exe ham Pa$$word! F0x SCCM
+AddClients.exe <DeviceName> <CertPath> <CertPW> <SiteCode> <Management point name>
 ````
-Now you're ready to use AddCMClients!
 
+#### Example
+
+If you wanted to create a new fake device in CM called 'FoxPC123', you exported the Cert to C:\temp\MixedModeTestCert.pfx, with the same password above, and you have a SiteCode of F0X and a MP of SCCM, you'd run:
+
+    AddClients.exe FoxPC123 c:\temp\MixedModeTestCert.pfx 'Pa$$w0rd!' F0X SCCM
+
+You should see the following output
+
+````
+
+Logging to: C:\temp\AddClients\bin\sXS\3\ClientFauxLogs.txt
+Found cert file at c:\temp\MixedModeTestCert.pfx
+Running on system[DC2016], registering as [FoxPC123]
+Using certificate for client authentication with thumbprint of '0857221E15006E9B5980AFCBF127CD87E740AB54'
+Signature Algorithm: sha256RSA
+Cert has a valid sha256RSA Signature Algorithm, proceeding
+Trying to reach: SCCM.FoxDeploy.local
+About to try to register FoxPC123.FoxDeploy.local
+Got SMSID from registration of: GUID:5A06B3E8-622C-472C-ACFC-C1D9F962128D
+ddrSettings clientID: GUID:5A06B3E8-622C-472C-ACFC-C1D9F962128D
+ddrSettings SiteCode: F0X
+ddrSettings ADSiteNa: Default-First-Site-Name
+ddrSettings DomainNa: FoxDeploy.local
+ddrSettings FakeName: FoxPC123
+Message MPHostName  : SCCM.FoxDeploy.local
+Sending: 104instances of HWinv data to CM
+
+````
+
+The client should appear within CM in ten seconds or so!
 
 
 #### What's here
@@ -29,5 +75,8 @@ Now you're ready to use AddCMClients!
 | Flexible Cert Path  | next  |---|
 |  WPF GUI | v2.0  |---|
 | PowerShell Cmdlet? | v3.0|---|
+
+# Warning
+This is meant for TestLab use only.  Proceed with caution
 
 *tested on ConfigrMgr Current Branch v1802*
