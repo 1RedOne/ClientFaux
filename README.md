@@ -71,8 +71,8 @@ The client should appear within CM in ten seconds or so!
 | Feature  |  Version | Done? |
 |---|---|---|
 | No more hardcoded variables!  | [v0.1-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha) |✔️|
-| No more hardcoded paths  | v0.2-alpha  |✔️|
-| Flexible Cert Path  | next  |✔️|
+| No more hardcoded paths  | [v0.2-alpha]](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
+| Flexible Cert Path  | [v0.2-alpha]](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
 | Better logging | next | ---|
 |  WPF GUI | v2.0  |---|
 | PowerShell Cmdlet? | v3.0|---|
