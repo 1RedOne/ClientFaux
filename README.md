@@ -1,7 +1,7 @@
 ![ClientFaux logo, think 'sly like a fox'](https://foxdeploy.files.wordpress.com/2018/06/clientfaux-1.png)
 
-# AddCMClients
-A tool for adding fake clients to ConfigMgr for collection querying, testing and reporting
+# ClientFaux - Client Simulation Tool
+A tool for adding simulated CM Clients to ConfigMgr for collection querying, report building, and testing ConfigMgr environments.
 
 ### Setting up the environment
 
@@ -72,9 +72,11 @@ The client should appear within CM in ten seconds or so!
 |---|---|---|
 | No more hardcoded variables!  | [v0.1-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha) |✔️|
 | No more hardcoded paths  | v0.2-alpha  |✔️|
-| Flexible Cert Path  | next  |---|
+| Flexible Cert Path  | next  |✔️|
 |  WPF GUI | v2.0  |---|
 | PowerShell Cmdlet? | v3.0|---|
+
+In the current version of the tool, we enroll a device and discard the certificate.  In a future version of the tool, we will try to maintain the certificate to use with subsequent communications, or to simulate recieving Windows Updates, etc.  The sky is the limit!  
 
 # Warning
 This is meant for TestLab use only.  Proceed with caution
