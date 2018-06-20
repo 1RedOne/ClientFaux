@@ -31,14 +31,14 @@ Export-PfxCertificate -cert cert:\localMachine\my\$($newCert.Thumbprint) -FilePa
 5. Run the binary with the following syntax
 
 ````powershell
-AddClients.exe <DeviceName> <CertPath> <CertPW> <SiteCode> <Management point name>
+ClientFaux <DeviceName> <CertPath> <CertPW> <SiteCode> <Management point name>
 ````
 
 #### Example
 
 If you wanted to create a new fake device in CM called 'FoxPC123', you exported the Cert to C:\temp\MixedModeTestCert.pfx, with the same password above, and you have a SiteCode of F0X and a MP of SCCM, you'd run:
 
-    AddClients.exe FoxPC123 c:\temp\MixedModeTestCert.pfx 'Pa$$w0rd!' F0X SCCM
+    ClientFaux FoxPC123 c:\temp\MixedModeTestCert.pfx 'Pa$$w0rd!' F0X SCCM
 
 You should see the following output
 
@@ -73,8 +73,11 @@ The client should appear within CM in ten seconds or so!
 | No more hardcoded variables!  | [v0.1-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha) |✔️|
 | No more hardcoded paths  | [v0.2-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
 | Flexible Cert Path  | [v0.2-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
-| Better logging | next | ---|
+| Better logging | [v0.3-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
+| Better Cert Creation Script | --- |---|
 |  WPF GUI | v2.0  |---|
+| Working Client Inventory | ---| ---|
+| Working Discovery |--- |---|
 | PowerShell Cmdlet? | v3.0|---|
 
 In the current version of the tool, we enroll a device and discard the certificate.  In a future version of the tool, we will try to maintain the certificate to use with subsequent communications, or to simulate recieving Windows Updates, etc.  The sky is the limit!  
