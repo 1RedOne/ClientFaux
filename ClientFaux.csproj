@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7F53166F-DD43-4ED5-AD99-A0502C456485}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AddClients</RootNamespace>
-    <AssemblyName>AddClients</AssemblyName>
+    <RootNamespace>ClientFaux</RootNamespace>
+    <AssemblyName>ClientFaux</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>foxdeploy.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.ConfigurationManagement.Messaging">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft System Center 2012 R2 Configuration Manager SDK\Redistributables\Microsoft.ConfigurationManagement.Messaging.dll</HintPath>
@@ -53,5 +56,12 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="foxdeploy.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "C:\Users\Stephen\source\repos\AddClients\AddClients\Program.cs" "C:\git\ClientFaux" /Y /I
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>
