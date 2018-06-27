@@ -53,6 +53,12 @@ namespace SimulateClient
             var outPutDirectory = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var Tick = DateTime.Now.Ticks.GetHashCode().ToString("x").ToUpper();
             var logPath = outPutDirectory + "\\ClientFaux_" + Tick + ".txt";
+
+            if (File.Exists(logPath))
+            {
+                logPath = outPutDirectory + "\\ClientFaux_" + Tick + "_1.txt";
+                Console.WriteLine("Logging as " + logPath);
+            }
             Console.WriteLine("Logging to: " + logPath);
             System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
             
