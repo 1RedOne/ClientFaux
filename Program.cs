@@ -6,8 +6,6 @@ using Microsoft.ConfigurationManagement.Messaging.Sender.Http;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
-using System.Xml;
-using System.Text;
 using System.Collections.Generic;
 
 namespace SimulateClient
@@ -143,27 +141,6 @@ namespace SimulateClient
             }
         }
 
-        static void GenerateHinvInstancesFromXml(string fullfilepath, ConfigMgrHardwareInventoryMessage tHINVMessage, SmsClientId clientId, string NetBiosName, string outPutDirectory)
-        {
-            string text = File.ReadAllText(outPutDirectory + "\\hinv_b.xml");
-            text = text.Replace("MyGuidHere", clientId.ToString());
-            text = text.Replace("MyNameHere", NetBiosName);
-            File.WriteAllText(fullfilepath, text, Encoding.Unicode);
-            Console.WriteLine("Updated GUID and Name within HINV file");
-            XmlDocument xdoc = new XmlDocument();
-            xdoc.Load(fullfilepath);
-            XmlElement root = xdoc.DocumentElement;
-            foreach (XmlElement instance in root.GetElementsByTagName("Instance"))
-            {
-                InventoryInstanceGeneric inventoryInstance = new InventoryInstanceGeneric();
-                inventoryInstance.ParentClass = instance.GetAttribute("ParentClass");
-                inventoryInstance.Class = instance.GetAttribute("Class");
-                inventoryInstance.Namespace = instance.GetAttribute("Namespace");
-                inventoryInstance.Content = instance.GetAttribute("Content");
-                inventoryInstance.RawXml = instance.InnerXml;
-                tHINVMessage.AddInstanceToInventory(inventoryInstance);
-            }
-        }
 
         static void SimulateClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory)
         {
