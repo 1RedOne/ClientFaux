@@ -74,7 +74,7 @@ The client should appear within CM in ten seconds or so!
 | No more hardcoded paths  | [v0.2-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
 | Flexible Cert Path  | [v0.2-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
 | Better logging | [v0.3-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
-| Working Client Inventory | v1.0 | ✔️|
+| Working Client Inventory | [v1.0](https://github.com/1RedOne/ClientFaux/releases/tag/v1.0) | ✔️|
 | Better Cert Creation Script | --- |---|
 |  WPF GUI | v2.0  |---|
 | Working Discovery |--- |---|
