@@ -6,6 +6,8 @@ using Microsoft.ConfigurationManagement.Messaging.Sender.Http;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
+using System.Xml;
+using System.Text;
 
 namespace SimulateClient
 
@@ -35,6 +37,7 @@ namespace SimulateClient
             Environment.Exit(1);
         }
 
+
         static void Main(string[] args)
 
         {
@@ -54,11 +57,24 @@ namespace SimulateClient
             var Tick = DateTime.Now.Ticks.GetHashCode().ToString("x").ToUpper();
             var logPath = outPutDirectory + "\\ClientFaux_" + Tick + ".txt";
 
-            if (File.Exists(logPath))
+            bool IsLocked = false;
+            //check to see if file is blocked
+            try
+            {
+                FileStream fs =File.Open(logPath, FileMode.OpenOrCreate,
+                            FileAccess.ReadWrite, FileShare.None);
+                fs.Close();
+            }
+            catch (IOException ex)
+            {
+                IsLocked = true;
+            }
+
+            if (IsLocked)
             {
                 logPath = outPutDirectory + "\\ClientFaux_" + Tick + "_1.txt";
-                Console.WriteLine("Logging as " + logPath);
             }
+            
             Console.WriteLine("Logging to: " + logPath);
             System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
             
@@ -87,7 +103,7 @@ namespace SimulateClient
             Console.WriteLine("Running on system[" + machineName + "], registering as [" + clientName + "]");
 
             //string ClientName = machineName;
-            SimulateClient(CMServerName, clientName, DomainName, SiteCode);
+            SimulateClient(CMServerName, clientName, DomainName, SiteCode, outPutDirectory);
 
         }
 
@@ -126,7 +142,29 @@ namespace SimulateClient
             }
         }
 
-        static void SimulateClient(string CMServerName, string ClientName, string DomainName, string SiteCode)
+        static void GenerateHinvInstancesFromXml(string fullfilepath, ConfigMgrHardwareInventoryMessage tHINVMessage, SmsClientId clientId, string NetBiosName, string outPutDirectory)
+        {
+            string text = File.ReadAllText(outPutDirectory + "\\hinv_b.xml");
+            text = text.Replace("MyGuidHere", clientId.ToString());
+            text = text.Replace("MyNameHere", NetBiosName);
+            File.WriteAllText(fullfilepath, text, Encoding.Unicode);
+            Console.WriteLine("Updated GUID and Name within HINV file");
+            XmlDocument xdoc = new XmlDocument();
+            xdoc.Load(fullfilepath);
+            XmlElement root = xdoc.DocumentElement;
+            foreach (XmlElement instance in root.GetElementsByTagName("Instance"))
+            {
+                InventoryInstanceGeneric inventoryInstance = new InventoryInstanceGeneric();
+                inventoryInstance.ParentClass = instance.GetAttribute("ParentClass");
+                inventoryInstance.Class = instance.GetAttribute("Class");
+                inventoryInstance.Namespace = instance.GetAttribute("Namespace");
+                inventoryInstance.Content = instance.GetAttribute("Content");
+                inventoryInstance.RawXml = instance.InnerXml;
+                tHINVMessage.AddInstanceToInventory(inventoryInstance);
+            }
+        }
+
+        static void SimulateClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory)
         {
             //HttpSender sender = new HttpSender();
 
@@ -227,11 +265,13 @@ namespace SimulateClient
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing);
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Encryption);
                 ddrMessage.Settings.HostName = CMServerName;
+                ddrMessage.Settings.Compression = MessageCompression.Zlib;
+                ddrMessage.Settings.ReplyCompression = MessageCompression.Zlib;
                 // Now send the message to the MP (it's asynchronous so there won't be a reply)
                 ddrMessage.SendMessage(Sender);
 
                 //todo add as a param 
-                /*
+                
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
                 hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
@@ -239,13 +279,48 @@ namespace SimulateClient
                 hinvMessage.SiteCode = SiteCode;
                 hinvMessage.NetBiosName = ClientName;
                 hinvMessage.DomainName = DomainName;
+                hinvMessage.ClientVersion = new ClientVersion("5.00.7711.0000");
                 hinvMessage.Settings.Compression = MessageCompression.Zlib;
                 hinvMessage.Settings.Security.EncryptMessage = true;
+                hinvMessage.Discover();
                 hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_LogicalDisk", @"root\cimv2\sms", "SMS_LogicalDisk"));
                 hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_Processor", @"root\cimv2\sms", "SMS_Processor"));
                 hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_SystemDevices", @"root\cimv2\sms", "SMS_SystemDevices"));
+                hinvMessage.InventoryReport = new InventoryReport();
+                hinvMessage.InventoryReport.ReportHeader = new InventoryReportHeader();
+                hinvMessage.InventoryReport.ReportHeader.Identification = new InventoryIdentification();
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine = new InventoryIdentificationMachine();
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientInstalled = true;
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientType = InventoryClientType.Advanced;
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientVersion = new ClientVersion("5.00.7711.0000");
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.NetBiosName = ClientName;
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.CodePage = 437;
+                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.LocaleId = 1033;
+                hinvMessage.InventoryReport.ReportHeader.Details = new InventoryReportDetails();
+                hinvMessage.InventoryReport.ReportHeader.Details.ReportContent = "Inventory\x0020Data";
+                hinvMessage.InventoryReport.ReportHeader.Details.ReportType = InventoryReportType.Full;
+                hinvMessage.InventoryReport.ReportHeader.Details.ReportTimeString = "20120322145729.366000+000";
+                hinvMessage.InventoryReport.ReportHeader.Details.Version = "2.0";
+                hinvMessage.InventoryReport.ReportHeader.Details.Format = "1.0";
+                hinvMessage.InventoryReport.ReportBody = new InventoryReportBody();
+                GenerateHinvInstancesFromXml(outPutDirectory + "\\hinv.xml", hinvMessage, hinvMessage.SmsId, hinvMessage.NetBiosName, outPutDirectory);
+
+                hinvMessage.InventoryReport = hinvMessage.BuildInventoryMessage(hinvMessage.HardwareInventoryInstances, false);
+                hinvMessage.InventoryReport.ReportHeader.Action = new InventoryActionHardwareInventory();
+                hinvMessage.InventoryReport.ReportHeader.Action.LastUpdateTime = new DateTime(2018, 7, 15);
+
+                hinvMessage.Validate(Sender);
                 hinvMessage.SendMessage(Sender);
-                Console.WriteLine("Sending: " + hinvMessage.HardwareInventoryInstances.Count + "instances of HWinv data to CM");*/
+
+                Console.WriteLine("hinv clientID: " + hinvMessage.SmsId);
+                Console.WriteLine("hinv SiteCode: " + hinvMessage.SiteCode);
+                Console.WriteLine("hinv ADSiteNa: " + hinvMessage.NetBiosName);
+                Console.WriteLine("hinv DomainNa: " + hinvMessage.DomainName);
+                Console.WriteLine("hinv FakeName: " + hinvMessage.NetBiosName);
+                Console.WriteLine("Message MPHostName  : " + CMServerName);
+                Console.WriteLine("Sending: " + hinvMessage.HardwareInventoryInstances.Count + "instances of HWinv data to CM");
+
+                Console.WriteLine(hinvMessage.InventoryReport.ReportBody);
             }
         }
     }

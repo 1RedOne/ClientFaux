@@ -61,7 +61,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "C:\Users\Stephen\source\repos\AddClients\AddClients\Program.cs" "C:\git\ClientFaux" /Y /I
-</PostBuildEvent>
+    <PostBuildEvent>copy "C:\Users\Stephen\source\repos\AddClients\AddClients\Program.cs" "c:\git\ClientFaux\Program.cs" /Y
+copy "C:\Users\Stephen\source\repos\AddClients\AddClients\ClientFaux.csproj" "c:\git\ClientFaux\ClientFaux.csproj" /Y
+explorer C:\Users\Stephen\source\repos\AddClients\AddClients\bin\Release</PostBuildEvent>
   </PropertyGroup>
 </Project>
