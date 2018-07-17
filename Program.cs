@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
 using System.Xml;
 using System.Text;
+using System.Collections.Generic;
 
 namespace SimulateClient
 
@@ -274,53 +275,37 @@ namespace SimulateClient
                 
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
-                hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
-                hinvMessage.SmsId = clientId;
-                hinvMessage.SiteCode = SiteCode;
-                hinvMessage.NetBiosName = ClientName;
-                hinvMessage.DomainName = DomainName;
-                hinvMessage.ClientVersion = new ClientVersion("5.00.7711.0000");
-                hinvMessage.Settings.Compression = MessageCompression.Zlib;
-                hinvMessage.Settings.Security.EncryptMessage = true;
+                hinvMessage.SmsId = clientId;                
+                //hinvMessage.Settings.Security.EncryptMessage = true;
                 hinvMessage.Discover();
-                hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_LogicalDisk", @"root\cimv2\sms", "SMS_LogicalDisk"));
-                hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_Processor", @"root\cimv2\sms", "SMS_Processor"));
-                hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", "Win32_SystemDevices", @"root\cimv2\sms", "SMS_SystemDevices"));
-                hinvMessage.InventoryReport = new InventoryReport();
-                hinvMessage.InventoryReport.ReportHeader = new InventoryReportHeader();
-                hinvMessage.InventoryReport.ReportHeader.Identification = new InventoryIdentification();
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine = new InventoryIdentificationMachine();
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientInstalled = true;
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientType = InventoryClientType.Advanced;
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.ClientVersion = new ClientVersion("5.00.7711.0000");
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.NetBiosName = ClientName;
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.CodePage = 437;
-                hinvMessage.InventoryReport.ReportHeader.Identification.Machine.LocaleId = 1033;
-                hinvMessage.InventoryReport.ReportHeader.Details = new InventoryReportDetails();
-                hinvMessage.InventoryReport.ReportHeader.Details.ReportContent = "Inventory\x0020Data";
-                hinvMessage.InventoryReport.ReportHeader.Details.ReportType = InventoryReportType.Full;
-                hinvMessage.InventoryReport.ReportHeader.Details.ReportTimeString = "20120322145729.366000+000";
-                hinvMessage.InventoryReport.ReportHeader.Details.Version = "2.0";
-                hinvMessage.InventoryReport.ReportHeader.Details.Format = "1.0";
-                hinvMessage.InventoryReport.ReportBody = new InventoryReportBody();
-                GenerateHinvInstancesFromXml(outPutDirectory + "\\hinv.xml", hinvMessage, hinvMessage.SmsId, hinvMessage.NetBiosName, outPutDirectory);
 
-                hinvMessage.InventoryReport = hinvMessage.BuildInventoryMessage(hinvMessage.HardwareInventoryInstances, false);
-                hinvMessage.InventoryReport.ReportHeader.Action = new InventoryActionHardwareInventory();
-                hinvMessage.InventoryReport.ReportHeader.Action.LastUpdateTime = new DateTime(2018, 7, 15);
+                var Classes = new List<string> { "Win32_LogicalDisk","Win32_Processor","Win32_SystemDevices","Win32_ComputerSystem","Win32_BIOS",
+                                                    "Win32_SystemEnclosure","Win32_OperatingSystem","Win32_NetworkAdapter","Win32_NetworkAdapterConfiguration",
+                                                    "Win32_DiskDrive","Win32_DiskPartition","Win32_Product","Win32_Service", "Win32Reg_AddRemovePrograms"};
 
+
+                foreach (string Class in Classes)
+                {
+                    
+                    Console.WriteLine($"---Adding class : [{Class}]");
+                    try { hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", Class)); }
+                    catch { Console.WriteLine($"!!!Class : [{Class}] was not found on this system"); }
+                }
+                
+                hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 hinvMessage.Validate(Sender);
                 hinvMessage.SendMessage(Sender);
+                //
+                //ConfigMgrSoftwareInventoryMessage sinv = new ConfigMgrSoftwareInventoryMessage();
+                //sinv.Settings.HostName = CMServerName;
+                //sinv.SmsId = clientId;
+                //
+                //sinv.Discover();
+                //sinv.
 
                 Console.WriteLine("hinv clientID: " + hinvMessage.SmsId);
-                Console.WriteLine("hinv SiteCode: " + hinvMessage.SiteCode);
-                Console.WriteLine("hinv ADSiteNa: " + hinvMessage.NetBiosName);
-                Console.WriteLine("hinv DomainNa: " + hinvMessage.DomainName);
-                Console.WriteLine("hinv FakeName: " + hinvMessage.NetBiosName);
-                Console.WriteLine("Message MPHostName  : " + CMServerName);
-                Console.WriteLine("Sending: " + hinvMessage.HardwareInventoryInstances.Count + "instances of HWinv data to CM");
-
-                Console.WriteLine(hinvMessage.InventoryReport.ReportBody);
+                
+                Console.WriteLine("Sending [" + hinvMessage.HardwareInventoryInstances.Count + "] instances of HWinv data to CM");
             }
         }
     }
