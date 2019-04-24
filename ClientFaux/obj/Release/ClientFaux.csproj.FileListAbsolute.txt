@@ -1,6 +1,0 @@
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\Interop.CERTENROLLLib.dll
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\ClientFaux.csproj.ResolveComReference.cache
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\MainWindow.g.cs
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\App.g.cs
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\WpfApp3_MarkupCompile.cache
-C:\Users\Stephen\source\repos\WpfApp3\WpfApp3\obj\Release\WpfApp3_MarkupCompile.lref
