@@ -69,8 +69,7 @@ namespace CMFaux
                 Devices.Add(ThisDevice);                
 
                 int thisIndex = devices.IndexOf(ThisDevice);
-                StartBackgroundWork(thisIndex);
-                System.Threading.Thread.Sleep(500);
+                StartBackgroundWork(thisIndex);                
             }
         }
 
@@ -138,6 +137,7 @@ namespace CMFaux
 
         void worker_DoWork(object sender, DoWorkEventArgs e)
         {
+            GetWait();
             string ThisFilePath = System.IO.Directory.GetCurrentDirectory(); 
             Device ThisClient = Devices[(Int32.Parse(e.Argument.ToString()))];
             //Update UI
@@ -155,6 +155,12 @@ namespace CMFaux
             //Update UI
             (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "SendingDiscovery");
             FauxDeployCMAgent.SendDiscovery(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
+
+            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "RequestingPolicy");
+            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
+
+            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "SendingCustom");
+            FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath);
             e.Result = ThisClient;
         }
 
@@ -183,6 +189,11 @@ namespace CMFaux
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Sending Discovery...";
                     ThisClient.ProcessProgress = 75;
+                    break;
+                case "RequestingPolicy":
+                    ThisClient.ImageSource = "Images\\step03.png";
+                    ThisClient.Status = "Requesting Policy...";
+                    ThisClient.ProcessProgress = 85;
                     break;
                 default:
                     break;
@@ -297,6 +308,13 @@ namespace CMFaux
         private void PWChanged(object sender, RoutedEventArgs args)
         {
             Password = PasswordBox.Password;
+        }
+
+        private void GetWait()
+        {
+            Random random = new Random();
+            int w = random.Next(3, 15);
+            System.Threading.Thread.Sleep(100 * w);
         }
     }
 }

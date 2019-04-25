@@ -13,6 +13,8 @@ using System.Management;
 using System.Diagnostics;
 using System.Xml;
 using static CMFaux.CMFauxStatusViewClasses;
+using Microsoft.ConfigurationManagement.Messaging.Messages.Server;
+using System.IO;
 
 namespace CMFaux
 {
@@ -92,7 +94,7 @@ namespace CMFaux
                 X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
-
+                
                 // create base DDR Message
                 ConfigMgrDataDiscoveryRecordMessage ddrMessage = new ConfigMgrDataDiscoveryRecordMessage();
 
@@ -123,6 +125,8 @@ namespace CMFaux
                 //see current value for the DDR message
                 var OSSetting = ddrMessage.DdrInstances.OfType<InventoryInstance>().Where(m => m.Class == "CCM_DiscoveryData");
                 
+                 
+                //$ddr.AddStringProperty('Wow', [Microsoft.ConfigurationManagement.Messaging.Messages.Server.DdmDiscoveryFlags]::None, 32, "Such custom")
                 ////retrieve actual setting
                 //string OSCaption = (from x in new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem").Get().Cast<ManagementObject>()
                 //            select x.GetPropertyValue("Caption")).FirstOrDefault().ToString();
@@ -134,7 +138,7 @@ namespace CMFaux
 
                 ////Set OS to correct setting
                 //xmlDoc.SelectSingleNode("/CCM_DiscoveryData/PlatformID").InnerText = "Microsoft Windows NT Server 10.0";
-                
+
                 ////Remove the instance
                 //ddrMessage.DdrInstances.Remove(ddrMessage.DdrInstances.OfType<InventoryInstance>().Where(m => m.Class == "CCM_DiscoveryData").FirstOrDefault());
 
@@ -144,19 +148,15 @@ namespace CMFaux
 
                 ////Add new instance
                 //ddrMessage.DdrInstances.Add(instance);
-                
+
                 var updatedOSSetting = ddrMessage.DdrInstances.OfType<InventoryInstance>().Where(m => m.Class == "CCM_DiscoveryData");
                 foreach (InventoryReportBodyElement Record in ddrMessage.DdrInstances)
-                {
-
-                    ddrMessage.DdrInstances.OfType<InventoryInstance>().Where(m => m.Class == "CCM_DiscoveryData");
-
-                    //InventoryReportBodyElement OSClass = ddrMessage.DdrInstances.Where(m => m.Class == "CCM_DiscoveryData");                    
+                {                 
                     Debug.WriteLine(Record.ToString());
                 }
                 //ddrMessage.DdrInstances.Count
                 // Now send the message to the MP (it's asynchronous so there won't be a reply)
-                ddrMessage.SendMessage(Sender);            
+                ddrMessage.SendMessage(Sender);
 
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
@@ -189,11 +189,35 @@ namespace CMFaux
             };
         }
 
+        public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath)
+        {
+            string ddmLocal = FilePath + "\\DDRS\\" + ClientName;
+            string CMddmInbox = "\\\\" + CMServerName + "\\SMS_" + SiteCode + "\\inboxes\\ddm.box\\" + ClientName + ".DDR";
+            
+            DiscoveryDataRecordFile ddrF = new DiscoveryDataRecordFile("ClientFaux");
+                ddrF.SiteCode = SiteCode;
+                ddrF.Architecture = "System";            
+                ddrF.AddStringProperty("Name", DdmDiscoveryFlags.Key, 32, ClientName);
+                ddrF.AddStringProperty("Netbios Name", DdmDiscoveryFlags.Name, 16, ClientName);
+                ddrF.AddStringProperty("Wow", DdmDiscoveryFlags.None, 32, "Client Faux");            
+            System.IO.Directory.CreateDirectory(ddmLocal);
+            DirectoryInfo di = new DirectoryInfo(ddmLocal);
+            ddrF.SerializeToFile(ddmLocal);
+
+            FileInfo file = di.GetFiles().FirstOrDefault();
+            
+            File.Copy(file.FullName, CMddmInbox, true);
+            System.IO.Directory.Delete(ddmLocal);
+
+        }
         public static void GetPolicy(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass, SmsClientId clientId)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
+                bool encryption = true;
+                bool replyCompression = true;
+                bool compression = true;
                 X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
                 ConfigMgrPolicyAssignmentRequest userPolicyMessage = new ConfigMgrPolicyAssignmentRequest();
 
@@ -205,17 +229,17 @@ namespace CMFaux
                 userPolicyMessage.SmsId = clientId;
                 userPolicyMessage.SiteCode = SiteCode;
                 userPolicyMessage.Discover();
+                userPolicyMessage.Settings.Security.EncryptMessage = encryption;
+                userPolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
+                userPolicyMessage.Settings.Compression = (true == compression) ? MessageCompression.Zlib : MessageCompression.None;
                 userPolicyMessage.SendMessage(Sender);
-                //userPolicyMessage.Settings.Security.EncryptMessage = encryption;
-                //userPolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
-                //userPolicyMessage.Settings.Compression = (true == compression) ? MessageCompression.Zlib : MessageCompression.None;
 
                 ConfigMgrPolicyAssignmentRequest machinePolicyMessage = new ConfigMgrPolicyAssignmentRequest();
                 machinePolicyMessage.Settings.HostName = CMServerName;
                 machinePolicyMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
-                //machinePolicyMessage.Settings.Security.EncryptMessage = encryption;
-                //machinePolicyMessage.Settings.Compression = (true == compression) ? MessageCompression.Zlib : MessageCompression.None;
-                //machinePolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
+                machinePolicyMessage.Settings.Security.EncryptMessage = encryption;
+                machinePolicyMessage.Settings.Compression = (true == compression) ? MessageCompression.Zlib : MessageCompression.None;
+                machinePolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
                 machinePolicyMessage.ResourceType = PolicyAssignmentResourceType.Machine;
                 machinePolicyMessage.SmsId = clientId;
                 machinePolicyMessage.SiteCode = SiteCode;
