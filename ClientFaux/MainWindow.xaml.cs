@@ -11,6 +11,7 @@ using System.ComponentModel;
 using static CMFaux.CMFauxStatusViewClasses;
 using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
+using System.Collections.Generic;
 
 namespace CMFaux
 {
@@ -28,7 +29,12 @@ namespace CMFaux
 
         private ObservableCollection<Device> devices = new ObservableCollection<Device>();
 
-        private static object _syncLock = new object();        
+        private static object _syncLock = new object();
+
+        public List<CustomClientRecord> CustomClientRecords = new List<CustomClientRecord> {
+            new CustomClientRecord(){ RecordName="Property1", RecordValue="Value1" },
+            new CustomClientRecord(){ RecordName="Property2", RecordValue="Value2" }
+        };
 
         public MainWindow()
         {
@@ -160,7 +166,7 @@ namespace CMFaux
             FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
 
             (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "SendingCustom");
-            FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath);
+            FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
             e.Result = ThisClient;
         }
 

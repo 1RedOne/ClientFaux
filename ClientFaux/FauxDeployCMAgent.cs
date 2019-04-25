@@ -189,17 +189,22 @@ namespace CMFaux
             };
         }
 
-        public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath)
+        public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath, List<CustomClientRecord> customClientRecords)
         {
             string ddmLocal = FilePath + "\\DDRS\\" + ClientName;
             string CMddmInbox = "\\\\" + CMServerName + "\\SMS_" + SiteCode + "\\inboxes\\ddm.box\\" + ClientName + ".DDR";
             
             DiscoveryDataRecordFile ddrF = new DiscoveryDataRecordFile("ClientFaux");
-                ddrF.SiteCode = SiteCode;
-                ddrF.Architecture = "System";            
-                ddrF.AddStringProperty("Name", DdmDiscoveryFlags.Key, 32, ClientName);
-                ddrF.AddStringProperty("Netbios Name", DdmDiscoveryFlags.Name, 16, ClientName);
-                ddrF.AddStringProperty("Wow", DdmDiscoveryFlags.None, 32, "Client Faux");            
+            ddrF.SiteCode = SiteCode;
+            ddrF.Architecture = "System";            
+            ddrF.AddStringProperty("Name", DdmDiscoveryFlags.Key, 32, ClientName);
+            ddrF.AddStringProperty("Netbios Name", DdmDiscoveryFlags.Name, 16, ClientName);
+
+            foreach (CustomClientRecord Record in customClientRecords)
+            {
+                ddrF.AddStringProperty(Record.RecordName, DdmDiscoveryFlags.None, 32, Record.RecordValue);
+            }
+            
             System.IO.Directory.CreateDirectory(ddmLocal);
             DirectoryInfo di = new DirectoryInfo(ddmLocal);
             ddrF.SerializeToFile(ddmLocal);

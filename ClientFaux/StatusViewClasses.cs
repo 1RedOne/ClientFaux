@@ -35,6 +35,12 @@ namespace CMFaux
             return fvi.ProductVersion;
         }
 
+        public class CustomClientRecord
+        {
+            public string RecordName { get; set; }
+            public string RecordValue { get; set; }
+        }
+
         public enum Statuses
         {
             [Description("Creating Certificate")]
