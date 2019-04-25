@@ -41,4 +41,4 @@ Custom DDM now works too!
 # Warning
 This is meant for TestLab use only.  Proceed with caution
 
-*tested on ConfigrMgr Current Branch v1802*
+*tested on ConfigrMgr Current Branch v1810*
