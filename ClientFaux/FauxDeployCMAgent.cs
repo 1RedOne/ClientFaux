@@ -164,8 +164,7 @@ namespace CMFaux
                 //hinvMessage.Settings.Security.EncryptMessage = true;
                 hinvMessage.Discover();
 
-                var Classes = CMFauxStatusViewClasses.GetWMIClasses();
-
+                var Classes = CMFauxStatusViewClasses.GetWMIClasses();                
                 foreach (string Class in Classes)
                 {
 
@@ -212,7 +211,7 @@ namespace CMFaux
             FileInfo file = di.GetFiles().FirstOrDefault();
             
             File.Copy(file.FullName, CMddmInbox, true);
-            System.IO.Directory.Delete(ddmLocal);
+            System.IO.Directory.Delete(ddmLocal, true);
 
         }
         public static void GetPolicy(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass, SmsClientId clientId)

@@ -12,6 +12,7 @@ using static CMFaux.CMFauxStatusViewClasses;
 using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CMFaux
 {
@@ -28,13 +29,14 @@ namespace CMFaux
         internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }
 
         private ObservableCollection<Device> devices = new ObservableCollection<Device>();
-
+                
         private static object _syncLock = new object();
 
         public List<CustomClientRecord> CustomClientRecords = new List<CustomClientRecord> {
             new CustomClientRecord(){ RecordName="Property1", RecordValue="Value1" },
             new CustomClientRecord(){ RecordName="Property2", RecordValue="Value2" }
         };
+        CMFauxStatusViewClasses vm = new CMFauxStatusViewClasses();
 
         public MainWindow()
         {
@@ -48,7 +50,9 @@ namespace CMFaux
             SiteCode = CMSiteCode.Text;
             ExportPath = FilePath.Text;
             dgDevices.ItemsSource = Devices;
-            BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);            
+            BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);
+            this.DataContext = vm;
+            vm.DeviceCounter = 0;
         }
         
         private void StartBackgroundWork(int thisIndex)
@@ -61,22 +65,49 @@ namespace CMFaux
             worker.RunWorkerAsync(thisIndex);
         }
 
-        private void CreateClientsButton_Click(object sender, RoutedEventArgs e)
+        private void ClickHandler(string BaseName, int CountOfMachines, int BeginningWith)
+        {
+            
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += (sender, e) =>
+            {
+                for (int i = BeginningWith; i < CountOfMachines; i++)
+                {
+                    string ThisClient = BaseName + i;
+                    Device ThisDevice = new Device() { Name = ThisClient, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                    Devices.Add(ThisDevice);
+
+                    int thisIndex = devices.IndexOf(ThisDevice);
+                    StartBackgroundWork(thisIndex);
+                }
+            };
+            
+            //worker.ProgressChanged += worker_ProgressChanged;
+            //worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.RunWorkerAsync();
+        }
+
+        private async void CreateClientsButton_Click(object sender, RoutedEventArgs e)
         {            
             DeviceExpander.IsExpanded = true;
             
             string BaseName = NewClientName.Text;
             int CountOfMachines = (Int32.TryParse(NumberOfClients.Text, out int unUsed)) ? Int32.Parse(NumberOfClients.Text) : 1;
             int BeginningWith = (!StartingNumber.Text.Length.Equals(0)) ? Int32.Parse(StartingNumber.Text) : 0;
-            for (int i = BeginningWith; i < CountOfMachines; i++)
+            //ClickHandler(BaseName, CountOfMachines, BeginningWith);
+            await Task.Run(() =>            
             {
-                string ThisClient = BaseName + i;
-                Device ThisDevice = new Device() { Name = ThisClient, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10};
-                Devices.Add(ThisDevice);                
+                for (int i = BeginningWith; i < CountOfMachines; i++)
+                {
+                    string ThisClient = BaseName + i;
+                    Device ThisDevice = new Device() { Name = ThisClient, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                    Devices.Add(ThisDevice);
 
-                int thisIndex = devices.IndexOf(ThisDevice);
-                StartBackgroundWork(thisIndex);                
-            }
+                    int thisIndex = devices.IndexOf(ThisDevice);
+                    StartBackgroundWork(thisIndex);
+                }
+            });
         }
 
         public static X509Certificate2 CreateSelfSignedCertificate(string subjectName)
@@ -201,6 +232,11 @@ namespace CMFaux
                     ThisClient.Status = "Requesting Policy...";
                     ThisClient.ProcessProgress = 85;
                     break;
+                case "SendingCustom":
+                    ThisClient.ImageSource = "Images\\step03.png";
+                    ThisClient.Status = "Sending Custom DDRs..";
+                    ThisClient.ProcessProgress = 95;
+                    break;
                 default:
                     break;
             }            
@@ -212,6 +248,7 @@ namespace CMFaux
             Device ThisClient = (Device)e.Result;
             ThisClient.Status = "Complete!";
             ThisClient.ProcessProgress = 100;
+            vm.DeviceCounter += 1;
             //ThisClient.ImageSource = "Images\\step02.png";
         }
         public string ExportCert(X509Certificate2 newCert, string ThisClient, string FilePath)

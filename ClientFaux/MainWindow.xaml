@@ -29,10 +29,10 @@
                             <RowDefinition Height="250"/>
                             <RowDefinition Height="500*"/>
                         </Grid.RowDefinitions>
-                        <!--<Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="550*" />
                             <ColumnDefinition Width="400*" />
-                        </Grid.ColumnDefinitions>-->
+                        </Grid.ColumnDefinitions>
                         <Image Source="Images\CMFoxv1.0Logo.png" Stretch="Fill" Grid.Row="0" Grid.ColumnSpan="2"></Image>
                         <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" Margin="10" Grid.Row="1">
                             <TextBlock TextWrapping="WrapWithOverflow" FontSize="16">When both are checked off, we're ready to go!</TextBlock>
@@ -79,6 +79,10 @@
                                     </DataGrid>
                                 </StackPanel>
                             </Expander>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Stretch" Grid.Column="1" Margin="10" Grid.Row="1">
+                            <Label Name="ClientCount" FontSize="24">Device Count</Label>
+                            <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"></Label>
                         </StackPanel>
                     </Grid>
                 </TabItem>
