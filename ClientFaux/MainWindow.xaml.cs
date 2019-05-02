@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using CERTENROLLLib;
 using System.IO;
 using System.ComponentModel;
 using static CMFaux.CMFauxStatusViewClasses;
@@ -13,11 +12,10 @@ using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace CMFaux
 {
-    
+
     // to do : fix discovery 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -95,16 +93,6 @@ namespace CMFaux
             DataContext = this;
             DeviceCounter = 0;
         }
-        
-        private void StartBackgroundWork(int thisIndex)
-        {
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.RunWorkerAsync(thisIndex);
-        }
         private void FireProgress(int thisIndex, string statusMessage)
         {
             Device ThisClient = Devices[thisIndex];
@@ -158,7 +146,7 @@ namespace CMFaux
             Device ThisClient = Devices[thisIndex];
             //Update UI
             FireProgress(thisIndex, "CreatingCert...");
-            X509Certificate2 newCert = CreateSelfSignedCertificate(ThisClient.Name);
+            X509Certificate2 newCert = FauxDeployCMAgent.CreateSelfSignedCertificate(ThisClient.Name);
             string myPath = ExportCert(newCert, ThisClient.Name, ThisFilePath);
 
             //Update UI
@@ -179,29 +167,6 @@ namespace CMFaux
             FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
 
             FireProgress(thisIndex, "Complete");
-        }
-
-        private void ClickHandler(string BaseName, int CountOfMachines, int BeginningWith)
-        {
-            
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.WorkerReportsProgress = true;
-            worker.DoWork += (sender, e) =>
-            {
-                for (int i = BeginningWith; i < CountOfMachines; i++)
-                {
-                    string ThisClient = BaseName + i;
-                    Device ThisDevice = new Device() { Name = ThisClient, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
-                    Devices.Add(ThisDevice);
-
-                    int thisIndex = devices.IndexOf(ThisDevice);
-                    StartBackgroundWork(thisIndex);
-                }
-            };
-            
-            //worker.ProgressChanged += worker_ProgressChanged;
-            //worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.RunWorkerAsync();
         }
 
         private async void CreateClientsButton_Click(object sender, RoutedEventArgs e)
@@ -239,156 +204,12 @@ namespace CMFaux
             await myTask;            
             
         }
-
-        public static X509Certificate2 CreateSelfSignedCertificate(string subjectName)
-        {
-            // create DN for subject and issuer
-            var dn = new CX500DistinguishedName();
-            dn.Encode("CN=" + subjectName, X500NameFlags.XCN_CERT_NAME_STR_NONE);
-            // create a new private key for the certificate
-            CX509PrivateKey privateKey = new CX509PrivateKey
-            {
-                ProviderName = "Microsoft Enhanced RSA and AES Cryptographic Provider",
-                MachineContext = false,
-                Length = 2048,
-                KeySpec = X509KeySpec.XCN_AT_SIGNATURE, // use is not limited
-                ExportPolicy = X509PrivateKeyExportFlags.XCN_NCRYPT_ALLOW_PLAINTEXT_EXPORT_FLAG
-            };
-            privateKey.Create();
-
-            // Use the stronger SHA512 hashing algorithm
-            var hashobj = new CObjectId();
-            hashobj.InitializeFromAlgorithmName(ObjectIdGroupId.XCN_CRYPT_HASH_ALG_OID_GROUP_ID,
-                ObjectIdPublicKeyFlags.XCN_CRYPT_OID_INFO_PUBKEY_ANY,
-                AlgorithmFlags.AlgorithmFlagsNone, "SHA256");
-
-            // add extended key usage if you want - look at MSDN for a list of possible OIDs
-            var oid = new CObjectId();
-            oid.InitializeFromValue("1.3.6.1.5.5.7.3.1"); // SSL server
-            var oidlist = new CObjectIds();
-            oidlist.Add(oid);
-            var eku = new CX509ExtensionEnhancedKeyUsage();
-            eku.InitializeEncode(oidlist);
-
-            // Create the self signing request
-            var cert = new CX509CertificateRequestCertificate();
-            cert.InitializeFromPrivateKey(X509CertificateEnrollmentContext.ContextUser, privateKey, "");
-            cert.Subject = dn;
-            cert.Issuer = dn; // the issuer and the subject are the same
-            cert.NotBefore = DateTime.Now;
-            // this cert expires immediately. Change to whatever makes sense for you
-            cert.NotAfter = DateTime.Now.AddYears(1);
-            cert.X509Extensions.Add((CX509Extension)eku); // add the EKU
-            cert.HashAlgorithm = hashobj; // Specify the hashing algorithm
-            cert.Encode(); // encode the certificate
-
-            // Do the final enrollment process
-            var enroll = new CX509Enrollment();
-            enroll.InitializeFromRequest(cert); // load the certificate
-            enroll.CertificateFriendlyName = subjectName; // Optional: add a friendly name
-            string csr = enroll.CreateRequest(); // Output the request in base64
-                                                 // and install it back as the response
-            enroll.InstallResponse(InstallResponseRestrictionFlags.AllowUntrustedCertificate,
-                csr, EncodingType.XCN_CRYPT_STRING_BASE64, ""); // no password
-                                                                // output a base64 encoded PKCS#12 so we can import it back to the .Net security classes
-            var base64encoded = enroll.CreatePFX("", // no password, this is for internal consumption
-                PFXExportOptions.PFXExportChainWithRoot);
-
-            // instantiate the target class with the PKCS#12 data (and the empty password)
-            return new System.Security.Cryptography.X509Certificates.X509Certificate2(
-                System.Convert.FromBase64String(base64encoded), "",
-                // mark the private key as exportable (this is usually what you want to do)
-                System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable
-            );
-        }      
-
-        void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            GetWait();
-            string ThisFilePath = System.IO.Directory.GetCurrentDirectory(); 
-            Device ThisClient = Devices[(Int32.Parse(e.Argument.ToString()))];
-            //Update UI
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "CreatingCert...");
-            X509Certificate2 newCert = CreateSelfSignedCertificate(ThisClient.Name);
-            string myPath = ExportCert(newCert, ThisClient.Name, ThisFilePath);
-            
-            //Update UI
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "CertCreated!");
-            System.Threading.Thread.Sleep(1500);
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "Starting Inventory...");
-            //FauxDeployCMAgent.SimulateClient(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password);
-            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password);
-            
-            //Update UI
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "SendingDiscovery");
-            FauxDeployCMAgent.SendDiscovery(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
-
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "RequestingPolicy");
-            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
-
-            (sender as BackgroundWorker).ReportProgress(Int32.Parse(e.Argument.ToString()), "SendingCustom");
-            FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
-            e.Result = ThisClient;
-        }
-
-        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            Device ThisClient = Devices[(Int32.Parse(e.ProgressPercentage.ToString()))];
-            string UserState = e.UserState.ToString();
-            switch
-                (UserState)
-            {
-                case "CreatingCert...":
-                    ThisClient.Status = "Creating Cert...";
-                    ThisClient.ProcessProgress = 15;
-                    break;
-                case "CertCreated":
-                    ThisClient.ImageSource = "Images\\step02.png";
-                    ThisClient.Status = "Registering...";
-                    ThisClient.ProcessProgress = 40;
-                    break;
-                case "Starting Inventory...":
-                    ThisClient.ImageSource = "Images\\step02.png";
-                    ThisClient.Status = "Starting Inventory...";
-                    ThisClient.ProcessProgress = 50;
-                    break;
-                case "SendingDiscovery":
-                    ThisClient.ImageSource = "Images\\step03.png";
-                    ThisClient.Status = "Sending Discovery...";
-                    ThisClient.ProcessProgress = 75;
-                    break;
-                case "RequestingPolicy":
-                    ThisClient.ImageSource = "Images\\step03.png";
-                    ThisClient.Status = "Requesting Policy...";
-                    ThisClient.ProcessProgress = 85;
-                    break;
-                case "SendingCustom":
-                    ThisClient.ImageSource = "Images\\step03.png";
-                    ThisClient.Status = "Sending Custom DDRs..";
-                    ThisClient.ProcessProgress = 95;
-                    break;
-                default:
-                    break;
-            }            
-
-        }
-
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {            
-            Device ThisClient = (Device)e.Result;
-            ThisClient.Status = "Complete!";
-            ThisClient.ProcessProgress = 100;
-            //vm.DeviceCounter += 1;
-            //ThisClient.ImageSource = "Images\\step02.png";
-        }
+        
         public string ExportCert(X509Certificate2 newCert, string ThisClient, string FilePath)
         {
             string ExportPath = FilePath + "\\" + ThisClient + ".pfx";
             byte[] certToFile = newCert.Export(X509ContentType.Pfx, PasswordBox.Password);
-
-            File.WriteAllBytes(ExportPath, certToFile); 
-            
-
+            File.WriteAllBytes(ExportPath, certToFile);
             return ExportPath;
         }
 
