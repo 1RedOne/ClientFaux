@@ -15,29 +15,6 @@ namespace CMFaux
 {
     public class CMFauxStatusViewClasses
     {
-        private int _deviceCounter;
-
-        public int DeviceCounter
-        {
-            get
-            {
-                return _deviceCounter;
-            }
-            set
-            {
-                _deviceCounter = value;
-                NotifyPropertyChanged("DeviceCounter");
-            }
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged(string v)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(v));
-            }
-        }
-
         public static List<String> GetWMIClasses()
         {
             return new List<string> { "Win32_ComputerSystem", "Win32_OperatingSystem", "Win32_BIOS", "Win32_SystemEnclosure","Win32_NetworkAdapter",
@@ -56,7 +33,7 @@ namespace CMFaux
                     "kernel32.dll"));
             return fvi.ProductVersion;
         }
-
+        public int DeviceCounter { get; set; }
         public class CustomClientRecord
         {
             public string RecordName { get; set; }
@@ -73,6 +50,23 @@ namespace CMFaux
             SendingDiscovery = 3
         }
 
+        private int _progress = 0;
+        //public int DeviceCounter
+        //{
+        //    get { return _progress; }
+        //    set
+        //    {
+        //        _progress = value;
+        //        OnPropertyChanged("DeviceCounter");
+        //    }
+        //}
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public class Device : INotifyPropertyChanged
         {

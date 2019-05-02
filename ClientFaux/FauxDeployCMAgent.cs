@@ -236,7 +236,7 @@ namespace CMFaux
                 userPolicyMessage.Settings.Security.EncryptMessage = encryption;
                 userPolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
                 userPolicyMessage.Settings.Compression = (true == compression) ? MessageCompression.Zlib : MessageCompression.None;
-                userPolicyMessage.SendMessage(Sender);
+                //userPolicyMessage.SendMessage(Sender);
 
                 ConfigMgrPolicyAssignmentRequest machinePolicyMessage = new ConfigMgrPolicyAssignmentRequest();
                 machinePolicyMessage.Settings.HostName = CMServerName;
@@ -248,7 +248,7 @@ namespace CMFaux
                 machinePolicyMessage.SmsId = clientId;
                 machinePolicyMessage.SiteCode = SiteCode;
                 machinePolicyMessage.Discover();
-                machinePolicyMessage.SendMessage(Sender);
+                //machinePolicyMessage.SendMessage(Sender);
             }
 
         }

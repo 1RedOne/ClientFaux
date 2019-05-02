@@ -30,8 +30,7 @@
                             <RowDefinition Height="500*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="550*" />
-                            <ColumnDefinition Width="400*" />
+                            <ColumnDefinition Width="700" />
                         </Grid.ColumnDefinitions>
                         <Image Source="Images\CMFoxv1.0Logo.png" Stretch="Fill" Grid.Row="0" Grid.ColumnSpan="2"></Image>
                         <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" Margin="10" Grid.Row="1">
@@ -39,8 +38,10 @@
                             <Label Name="CMSettingsStatusLabel" FontSize="16">CM Settings: ✔</Label>
                             <Label Name="DeviceNameStatusLabel" FontSize="16">Device Naming: ✔</Label>
                             <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click"/>
-                            <Expander Name="DeviceExpander">
-                                <StackPanel Margin="10">
+                            <Label Name="ClientCount" FontSize="24">Device Count</Label>
+                            <Label Name="Counter" FontSize="24" Content="{Binding DeviceCounter}"></Label>
+                            <Expander Name="DeviceExpander" >
+                                <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700"> 
                                     <DataGrid Name="dgDevices" AutoGenerateColumns="False">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
@@ -77,12 +78,8 @@
                                             </DataTemplate>
                                         </DataGrid.RowDetailsTemplate>
                                     </DataGrid>
-                                </StackPanel>
+                                </ContentControl>
                             </Expander>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Stretch" Grid.Column="1" Margin="10" Grid.Row="1">
-                            <Label Name="ClientCount" FontSize="24">Device Count</Label>
-                            <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"></Label>
                         </StackPanel>
                     </Grid>
                 </TabItem>
