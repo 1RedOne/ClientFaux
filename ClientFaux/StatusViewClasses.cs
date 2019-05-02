@@ -33,7 +33,7 @@ namespace CMFaux
                     "kernel32.dll"));
             return fvi.ProductVersion;
         }
-        public int DeviceCounter { get; set; }
+        
         public class CustomClientRecord
         {
             public string RecordName { get; set; }
@@ -48,18 +48,7 @@ namespace CMFaux
             RegisteringClient = 2,
             [Description("Sending Discovery")]
             SendingDiscovery = 3
-        }
-
-        private int _progress = 0;
-        //public int DeviceCounter
-        //{
-        //    get { return _progress; }
-        //    set
-        //    {
-        //        _progress = value;
-        //        OnPropertyChanged("DeviceCounter");
-        //    }
-        //}
+        }       
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string propertyName)

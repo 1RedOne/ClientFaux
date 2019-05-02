@@ -19,7 +19,7 @@ namespace CMFaux
 {
     
     // to do : fix discovery 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly BackgroundWorker worker = new BackgroundWorker();        
         public string Password { get; private set; }
@@ -28,37 +28,71 @@ namespace CMFaux
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
-        //public int DeviceCounter { get; set; }
-        internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }
-        //CMFauxStatusViewClasses vm = new CMFauxStatusViewClasses();
-        
+        public int maxThreads { get; private set; }
+        private int _idCounter;
+        public int IdCounter
+        {
+            get { return _idCounter; }
+            set
+            {
+                if (value != _idCounter)
+                {
+                    _idCounter = value;
+                    OnPropertyChanged("IdCounter");
+                }
+            }
+        }
 
-        private ObservableCollection<Device> devices = new ObservableCollection<Device>();
-        SemaphoreSlim maxThread = new SemaphoreSlim(20);
+        private int _DeviceCounter { get; set; }
+        public int DeviceCounter
+        {
+            get { return _DeviceCounter; }
+            set
+            {
+                if (value != _DeviceCounter)
+                {
+                    _DeviceCounter = value;
+                    OnPropertyChanged("DeviceCounter");
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string name)
+        {
+            var handler = System.Threading.Interlocked.CompareExchange(ref PropertyChanged, null, null);
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+        internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }               
+
+        private ObservableCollection<Device> devices = new ObservableCollection<Device>();        
         private static object _syncLock = new object();
-        //public static void IncrementInProcess()
-        //{
-        //    Interlocked.Increment(ref DeviceCounter);
-        //}
+       
         public List<CustomClientRecord> CustomClientRecords = new List<CustomClientRecord> {
             new CustomClientRecord(){ RecordName="Property1", RecordValue="Value1" },
             new CustomClientRecord(){ RecordName="Property2", RecordValue="Value2" }
         };
-       
 
         public MainWindow()
         {
             InitializeComponent();
             FilePath.Text = System.IO.Directory.GetCurrentDirectory();
             PasswordBox.Password = "Pa$$w0rd!";
+            MaximumThreads.Text = "7";
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             Password = PasswordBox.Password;
             BaseName = NewClientName.Text;
             CMServer = CMServerName.Text;
             SiteCode = CMSiteCode.Text;
             ExportPath = FilePath.Text;
+            maxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
-            BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);            
+            BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);
+            Counter.SetBinding(ContentProperty, new Binding("IdCounter"));
+            DataContext = this;
             DeviceCounter = 0;
         }
         
@@ -177,8 +211,9 @@ namespace CMFaux
             string BaseName = NewClientName.Text;
             int CountOfMachines = (Int32.TryParse(NumberOfClients.Text, out int unUsed)) ? Int32.Parse(NumberOfClients.Text) : 1;
             int BeginningWith = (!StartingNumber.Text.Length.Equals(0)) ? Int32.Parse(StartingNumber.Text) : 0;
-            //ClickHandler(BaseName, CountOfMachines, BeginningWith);
             List<String> DeviceList = new List<string>();
+
+            var progress = new Progress<int>(_ => IdCounter++) as IProgress<int>;
 
             for (int i = BeginningWith; i < CountOfMachines; i++)
             {
@@ -188,31 +223,20 @@ namespace CMFaux
             }
 
             var myTask = Task.Run(() =>
-            {
-                Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = 7 }, device =>
+            {                
+                Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = maxThreads}, device =>
                 {
                     Device ThisDevice = new Device() { Name = device, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
-                    Devices.Add(ThisDevice);
-
+                    Devices.Add(ThisDevice);                    
                     int thisIndex = devices.IndexOf(ThisDevice);
                     RegisterClient(thisIndex);
-                    //BeginInvoke(new Action(() => { progressBar.Maximum = progress.Total; progressBar.Value = progress.Current; }));
 
-                    var c = Interlocked.Increment(ref DeviceCounter);
-                });
+                    progress.Report(0);
+             
+                });             
             });
 
-            await myTask;
-            //{
-            
-            //        //string ThisClient = BaseName + i;
-            //    Device ThisDevice = new Device() { Name = ThisClient, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
-            //    Devices.Add(ThisDevice);
-
-            //    int thisIndex = devices.IndexOf(ThisDevice);
-            //    RegisterClient(thisIndex);
-            //    }   , TaskCreationOptions.LongRunning)
-            //    .ContinueWith((task) => maxThread.Release());
+            await myTask;            
             
         }
 
@@ -464,6 +488,11 @@ namespace CMFaux
             Random random = new Random();
             int w = random.Next(3, 15);
             System.Threading.Thread.Sleep(100 * w);
+        }
+
+        private void MaximumThreads_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            maxThreads = int.Parse(MaximumThreads.Text);
         }
     }
 }

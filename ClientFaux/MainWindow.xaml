@@ -39,10 +39,10 @@
                             <Label Name="DeviceNameStatusLabel" FontSize="16">Device Naming: ✔</Label>
                             <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click"/>
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
-                            <Label Name="Counter" FontSize="24" Content="{Binding DeviceCounter}"></Label>
+                            <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/>
                             <Expander Name="DeviceExpander" >
                                 <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700"> 
-                                    <DataGrid Name="dgDevices" AutoGenerateColumns="False">
+                                    <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
                                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" IsReadOnly="True" />
@@ -109,7 +109,9 @@
                             <Label>Starting Number</Label>
                             <TextBox ToolTip="The starting digit when making multiple clients, something like [10]." Name="StartingNumber" PreviewTextInput="TextBox_OnStartingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,10,0" TextChanged="textChangedEventHandler"></TextBox>
                             <Label>Ending Number</Label>
-                            <TextBox ToolTip="The ending digit when making multiple clients, something like [20]." Name="EndingNumber" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="textChangedEventHandler"></TextBox>
+                            <TextBox ToolTip="The ending digit when making multiple clients, something like [20]." Name="EndingNumber" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="45px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="textChangedEventHandler"></TextBox>
+                            <Label>Maximum Threads</Label>
+                            <TextBox ToolTip="How many threads woudl you like to use?  Seven will max out even very beefy systems." Name="MaximumThreads" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="MaximumThreads_TextChanged"></TextBox>
                             <Label>Number of Fake CM Clients to be created </Label>
                             <TextBlock Name="NumberOfClients" Foreground="#FF1053CD">Count will appear here</TextBlock>
                         </StackPanel>
