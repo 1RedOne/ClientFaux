@@ -197,7 +197,7 @@ namespace CMFaux
                     RegisterClient(thisIndex);
 
                     progress.Report(0);
-             
+                    dgDevices.ScrollIntoView(dgDevices.Items[-1]);
                 });             
             });
 
