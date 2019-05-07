@@ -19,8 +19,8 @@ namespace CMFaux
         
         public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass) {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
-
             {
+                HttpSender MySender = new HttpSender();
                 X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
                 Console.WriteLine(@"Using certificate for client authentication with thumbprint of '{0}'", certificate.Thumbprint);
@@ -33,7 +33,7 @@ namespace CMFaux
                 }
                 else
                 {
-                     throw new Exception("Expected cert w/ a valid sha256RSA Signature Algorithm");
+                    throw new Exception("Expected cert w/ a valid sha256RSA Signature Algorithm");
                 }
 
                 // Create a registration request
@@ -65,7 +65,7 @@ namespace CMFaux
                 SmsClientId testclientId = new SmsClientId();
                 try
                 {
-                    testclientId = registrationRequest.RegisterClient(Sender, TimeSpan.FromMinutes(5));
+                    testclientId = registrationRequest.RegisterClient(MySender, TimeSpan.FromMinutes(5));
                 }
                 catch (Exception ex)
                 {
@@ -77,7 +77,7 @@ namespace CMFaux
                 SmsClientId clientId = testclientId;
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
                 return clientId;
-                }
+            }
             }
 
         public static void SendDiscovery(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass, SmsClientId clientId)
@@ -85,6 +85,7 @@ namespace CMFaux
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
+                HttpSender MySender = new HttpSender();
                 X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
@@ -150,7 +151,7 @@ namespace CMFaux
                 }
                 //ddrMessage.DdrInstances.Count
                 // Now send the message to the MP (it's asynchronous so there won't be a reply)
-                ddrMessage.SendMessage(Sender);
+                ddrMessage.SendMessage(MySender);
 
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
@@ -177,8 +178,8 @@ namespace CMFaux
                 }                
 
                 hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
-                hinvMessage.Validate(Sender);
-                hinvMessage.SendMessage(Sender);
+                hinvMessage.Validate(MySender);
+                hinvMessage.SendMessage(MySender);
             };
         }
         public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath, List<CustomClientRecord> customClientRecords)
