@@ -72,7 +72,7 @@ namespace CMFaux
                     Console.WriteLine("Failed to enroll with an error");
                     Console.WriteLine(ex.Message);
                     System.Windows.MessageBox.Show("we failed with" + ex.Message);
-                    throw;
+                    //throw;
                 }
                 SmsClientId clientId = testclientId;
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
