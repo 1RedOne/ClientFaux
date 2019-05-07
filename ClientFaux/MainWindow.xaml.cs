@@ -191,7 +191,7 @@ namespace CMFaux
             {                
                 Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = maxThreads}, device =>
                 {
-                    Device ThisDevice = new Device() { Name = device, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                    Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
                     Devices.Add(ThisDevice);                    
                     int thisIndex = devices.IndexOf(ThisDevice);
                     RegisterClient(thisIndex);
