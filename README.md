@@ -2,7 +2,8 @@
 
 # ClientFaux - Client Simulation Tool
 A tool for adding simulated CM Clients to ConfigMgr for collection querying, report building, and testing ConfigMgr environments.  [Read the blog post here.](https://foxdeploy.com/2018/06/08/how-to-populate-cm-with-fake-clients/)
-<a class="btn btn-sm new-pull-request-btn" href="https://github.com/1RedOne/ClientFaux/releases">Download now! 🦊</a>
+
+<a class="btn btn-sm" href="https://github.com/1RedOne/ClientFaux/releases">Download now! 🦊</a>
 ### Setting up the environment
 
 There is now practically no setup to the tool, simply download the newest release from releases above!  Run the installer then launch ClientFaux as a standard user account (or admin, doesn't matter).
