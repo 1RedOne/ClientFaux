@@ -141,7 +141,7 @@ namespace CMFaux
         }
         private void RegisterClient(int thisIndex)
         {
-            GetWait();
+            //GetWait();
             string ThisFilePath = System.IO.Directory.GetCurrentDirectory();
             Device ThisClient = Devices[thisIndex];
             //Update UI
@@ -197,7 +197,7 @@ namespace CMFaux
                     RegisterClient(thisIndex);
 
                     progress.Report(0);
-                    dgDevices.ScrollIntoView(dgDevices.Items[-1]);
+                    //dgDevices.ScrollIntoView(dgDevices.Items[-1]);
                 });             
             });
 
