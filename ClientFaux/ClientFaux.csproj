@@ -39,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -178,6 +179,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy C:\git\ClientFaux\ClientFaux\bin\Debug \\DC2016\Debug &amp; exit 0</PostBuildEvent>
+    <PostBuildEvent>rem robocopy C:\git\ClientFaux\ClientFaux\bin\Debug \\DC2016\Debug &amp; exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>
