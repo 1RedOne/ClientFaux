@@ -10,6 +10,7 @@ using static CMFaux.CMFauxStatusViewClasses;
 using Microsoft.ConfigurationManagement.Messaging.Messages.Server;
 using System.IO;
 using CERTENROLLLib;
+using System.Collections.ObjectModel;
 
 namespace CMFaux
 {
@@ -181,14 +182,14 @@ namespace CMFaux
                 hinvMessage.SendMessage(Sender);
             };
         }
-        public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath, List<CustomClientRecord> customClientRecords)
+        public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath, ObservableCollection<CustomClientRecord> customClientRecords)
         {
             string ddmLocal = FilePath + "\\DDRS\\" + ClientName;
             string CMddmInbox = "\\\\" + CMServerName + "\\SMS_" + SiteCode + "\\inboxes\\ddm.box\\" + ClientName + ".DDR";
             
             DiscoveryDataRecordFile ddrF = new DiscoveryDataRecordFile("ClientFaux");
             ddrF.SiteCode = SiteCode;
-            ddrF.Architecture = "System";            
+            ddrF.Architecture = "System";
             ddrF.AddStringProperty("Name", DdmDiscoveryFlags.Key, 32, ClientName);
             ddrF.AddStringProperty("Netbios Name", DdmDiscoveryFlags.Name, 16, ClientName);
 

@@ -18,8 +18,7 @@ namespace CMFaux
 
     // to do : fix discovery 
     public partial class MainWindow : Window, INotifyPropertyChanged
-    {
-        private readonly BackgroundWorker worker = new BackgroundWorker();        
+    {        
         public string Password { get; private set; }
         public string BaseName { get; private set; }
         public string CMServer { get; private set; }
@@ -54,6 +53,16 @@ namespace CMFaux
                 }
             }
         }
+        
+        internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }    
+        private ObservableCollection<Device> devices = new ObservableCollection<Device>();
+        
+        internal ObservableCollection<CustomClientRecord> CustomClientRecords { get => customClientRecords; set => customClientRecords = value; }
+        private ObservableCollection<CustomClientRecord> customClientRecords = new ObservableCollection<CustomClientRecord> {
+            new CustomClientRecord(){ RecordName="ClientKind", RecordValue="FakeClient" }
+        };
+
+        private static object _syncLock = new object();
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string name)
@@ -64,15 +73,6 @@ namespace CMFaux
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
-        internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }               
-
-        private ObservableCollection<Device> devices = new ObservableCollection<Device>();        
-        private static object _syncLock = new object();
-       
-        public List<CustomClientRecord> CustomClientRecords = new List<CustomClientRecord> {
-            new CustomClientRecord(){ RecordName="Property1", RecordValue="Value1" },
-            new CustomClientRecord(){ RecordName="Property2", RecordValue="Value2" }
-        };
 
         public MainWindow()
         {
@@ -88,7 +88,9 @@ namespace CMFaux
             ExportPath = FilePath.Text;
             maxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
+            dgInventory.ItemsSource = customClientRecords;
             BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);
+            BindingOperations.EnableCollectionSynchronization(CustomClientRecords, _syncLock);
             Counter.SetBinding(ContentProperty, new Binding("IdCounter"));
             DataContext = this;
             DeviceCounter = 0;
@@ -191,7 +193,7 @@ namespace CMFaux
             {                
                 Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = maxThreads}, device =>
                 {
-                    Device ThisDevice = new Device() { Name = device, Status = "CertCreated", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                    Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
                     Devices.Add(ThisDevice);                    
                     int thisIndex = devices.IndexOf(ThisDevice);
                     RegisterClient(thisIndex);
@@ -253,9 +255,14 @@ namespace CMFaux
             TabControl.SelectedIndex = 2;
         }
 
-        private void SCCMSettings_Click(object sender, RoutedEventArgs e)
+        private void Inventory_Click (object sender, RoutedEventArgs e)
         {
             TabControl.SelectedIndex = 3;
+        }
+
+        private void SCCMSettings_Click(object sender, RoutedEventArgs e)
+        {
+            TabControl.SelectedIndex = 4;
         }
 
         private void ReadyButton_Click(object sender, RoutedEventArgs e)
@@ -314,6 +321,14 @@ namespace CMFaux
         private void MaximumThreads_TextChanged(object sender, TextChangedEventArgs e)
         {
             maxThreads = int.Parse(MaximumThreads.Text);
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            CustomClientRecord newRecord = new CustomClientRecord() { RecordName = NewDDRProp.Text, RecordValue = NewDDRValue.Text };
+            CustomClientRecords.Add(newRecord);
+            NewDDRValue.Text = null;
+            NewDDRProp.Text = null;
         }
     }
 }
