@@ -178,6 +178,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem robocopy C:\git\ClientFaux\ClientFaux\bin\Debug \\DC2016\Debug &amp; exit 0</PostBuildEvent>
+    <PostBuildEvent>robocopy C:\git\ClientFaux\ClientFaux\bin\Debug \\DC2016\Debug &amp; exit 0</PostBuildEvent>
   </PropertyGroup>
 </Project>

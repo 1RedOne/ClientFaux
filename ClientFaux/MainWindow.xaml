@@ -42,7 +42,7 @@
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
                             <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/>
                             <Expander Name="DeviceExpander" >
-                                <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700"> 
+                                <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700">
                                     <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
@@ -55,6 +55,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                         </DataGrid.Columns>
+                                        <DataGrid.ItemContainerStyle>
+                                            <Style TargetType="DataGridRow">
+                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseDown"/>
+                                            </Style>
+                                        </DataGrid.ItemContainerStyle>
                                         <DataGrid.RowDetailsTemplate>
                                             <DataTemplate>
                                                 <DockPanel Background="GhostWhite">

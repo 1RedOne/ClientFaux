@@ -330,5 +330,14 @@ namespace CMFaux
             NewDDRValue.Text = null;
             NewDDRProp.Text = null;
         }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            DataGridRow row = sender as DataGridRow;
+            if (row != null)
+            {
+                row.DetailsVisibility = row.IsSelected ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            }
+        }
     }
 }
