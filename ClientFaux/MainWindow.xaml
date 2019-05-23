@@ -25,7 +25,7 @@
                     </Style>
                 </TabControl.ItemContainerStyle>
                 <TabItem Name="BasePanel">
-                    <Grid>
+                    <Grid x:Name="BaseGrid">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="250"/>
                             <RowDefinition Height="500*"/>
@@ -33,7 +33,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="700" />
                         </Grid.ColumnDefinitions>
-                        <Image Source="Images\CMFoxv1.0Logo.png" Stretch="Fill" Grid.Row="0" Grid.ColumnSpan="2"></Image>
+                        <Image x:Name="logo" Source="Images\CMFoxv1.0Logo.png" Grid.Row="0" Grid.ColumnSpan="2" SizeChanged="ImageSizeChanged"/>
                         <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" Margin="10" Grid.Row="1">
                             <TextBlock TextWrapping="WrapWithOverflow" FontSize="16">When both are checked off, we're ready to go!</TextBlock>
                             <Label Name="CMSettingsStatusLabel" FontSize="16">CM Settings: ✔</Label>

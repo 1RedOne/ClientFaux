@@ -339,5 +339,23 @@ namespace CMFaux
                 row.DetailsVisibility = row.IsSelected ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
             }
         }
+
+        //private void Expander_Expanded(object sender, RoutedEventArgs e)
+        //{
+        //    logo.Width = BaseGrid.ActualWidth;
+        //}
+
+        private void ImageSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (imageSizeSet || !(image.ActualWidth > scrollViewer.ViewportWidth) && !(image.ActualHeight > scrollViewer.ViewportHeight))
+            {
+                return;
+            }
+
+            // If the image is larger than the screen, zoom it out.
+            var zoomFactor = (float)Math.Min(scrollViewer.ViewportWidth / image.ActualWidth, scrollViewer.ViewportHeight / image.ActualHeight);
+            scrollViewer.ZoomToFactor(zoomFactor);
+            imageSizeSet = true;
+        }
     }
 }
