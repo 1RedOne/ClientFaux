@@ -14,10 +14,11 @@
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="✈ Ready..."  Name="ReadyButton" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="ReadyButton_Click" Width="119" />
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📜 Certificates"  Name="Certificates" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Certificates_Click" Width="119"/>
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📝 Device Naming" Name="DeviceNaming" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="DeviceNaming_Click"/>
+                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📄 Inventory" Name="Inventory" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Inventory_Click" Width="119"/>
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="🌐 Configure CM"  Name="SCCMSettings" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="SCCMSettings_Click" />
                 </StackPanel>
             </Expander>
-            <TabControl Name="TabControl" BorderBrush="White" >
+            <TabControl Name="TabControl" BorderBrush="White">
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="{x:Type TabItem}">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -41,7 +42,7 @@
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
                             <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/>
                             <Expander Name="DeviceExpander" >
-                                <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700"> 
+                                <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700">
                                     <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
@@ -54,6 +55,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                         </DataGrid.Columns>
+                                        <DataGrid.ItemContainerStyle>
+                                            <Style TargetType="DataGridRow">
+                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseDown"/>
+                                            </Style>
+                                        </DataGrid.ItemContainerStyle>
                                         <DataGrid.RowDetailsTemplate>
                                             <DataTemplate>
                                                 <DockPanel Background="GhostWhite">
@@ -114,6 +120,53 @@
                             <TextBox ToolTip="How many threads woudl you like to use?  Seven will max out even very beefy systems." Name="MaximumThreads" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="MaximumThreads_TextChanged"></TextBox>
                             <Label>Number of Fake CM Clients to be created </Label>
                             <TextBlock Name="NumberOfClients" Foreground="#FF1053CD">Count will appear here</TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Name="InventoryPanel">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="400*" />
+                            <ColumnDefinition Width="400*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="10" HorizontalAlignment="Left">
+                            <Label FontFamily="Calibri" FontSize="22px">Custom Inventory Settings</Label>
+                            <TextBlock TextWrapping="WrapWithOverflow">ClientFaux can report many types of custom inventory.</TextBlock>
+                            <Label FontSize="20">Discovery Custom Properties</Label>
+                            <Label>PropertyName</Label>
+                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="NewDDRProp" HorizontalAlignment="Left" MaxWidth="180px" Margin="0,0,20,0" MinWidth="120px">MyCustomProp</TextBox>
+                            <Label>PropertyValue</Label>
+                            <TextBox ToolTip="The starting digit when making multiple clients, something like [10]." Name="NewDDRValue" HorizontalAlignment="Left" Margin="0,0,10,0" MinWidth="120px">MyCustomValue</TextBox>
+                            <Button Content="Save" Margin="0,10,10,10" Width="80px" HorizontalAlignment="Left" Click="SaveButton_Click"></Button>
+                            <DataGrid Name="dgInventory" AutoGenerateColumns="False" MaxHeight="500" MaxWidth="400" HorizontalAlignment="Left">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Property" Binding="{Binding RecordName}" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding RecordValue}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                                <!--<DataGrid.RowDetailsTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Background="GhostWhite">
+                                            <Image DockPanel.Dock="Left" Source="{Binding ImageSource}" Height="64" Margin="10" />
+                                            <Grid Margin="0,10">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Text="Name: " FontWeight="Bold" Grid.Row="1" />
+                                                <TextBlock Text="{Binding Name}" Grid.Column="1" Grid.Row="1" />
+                                                <TextBlock Text="Client Status: " FontWeight="Bold" Grid.Row="2" />
+                                                <TextBlock Text="{Binding Status}" Grid.Column="1" Grid.Row="2" />
+                                                <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding ProcessProgress}" MaxWidth="150px" Height="18" FlowDirection="LeftToRight"/>
+                                            </Grid>
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </DataGrid.RowDetailsTemplate>-->
+                            </DataGrid>
                         </StackPanel>
                     </Grid>
                 </TabItem>
