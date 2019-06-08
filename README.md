@@ -40,6 +40,10 @@ Custom DDM now works too!
 
 ![ClientFaux logo, think 'sly like a fox'](https://i.imgur.com/8D3xUgW.png)
 
+### Reconciliation and Reporting
+
+All devices created with ClientFaux recieve the custom DDR property of `ClientType : FakeClient`, you can use this property to exclude all fake Clients, or to exclude them instead in your reports and Collections.
+
 # Warning
 This is meant for TestLab use only.  Proceed with caution
 
