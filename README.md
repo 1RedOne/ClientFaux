@@ -28,7 +28,7 @@ The client should appear within CM in ten seconds or so!  Hardware Inventory wil
 | Better logging | [v0.3-alpha](https://github.com/1RedOne/ClientFaux/releases/tag/alpha)  |✔️|
 | Working Client Inventory | [v1.0](https://github.com/1RedOne/ClientFaux/releases/tag/v1.0) | ✔️|
 | WPF GUI | v2.0  | ✔️ |
-| User Custom Client Discovery Values |v 2.1| ---|
+| User Custom Client Discovery Values |[v2.1](https://github.com/1RedOne/ClientFaux/releases/tag/v2.1.0)| ✔️|
 | Machine and User policy download |v 2.2| ---|
 | Machine and User policy viewing |v 2.x| ---|
 | Client HeartBeat Sending |v 2.x | ---|
