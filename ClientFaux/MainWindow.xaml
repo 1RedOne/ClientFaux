@@ -181,7 +181,7 @@
                             <TextBlock TextWrapping="WrapWithOverflow">ClientFaux needs some information about your ConfigMgr instance before we can get started.</TextBlock>
                             <Label>ConfigMgr Site Server Name</Label>
                             <TextBox ToolTip="The FQDN of your CM Primary Site, something like [SCCM.FoxDeploy.com]" Name="CMServerName" TextChanged="CMServerName_TextChanged">SCCM.FoxDeploy.local</TextBox>
-                            <Label>Cert Export Location</Label>
+                            <Label>ConfigMgr Site Code</Label>
                             <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged">F0X</TextBox>
                         </StackPanel>
                     </Grid>
