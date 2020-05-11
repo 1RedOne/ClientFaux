@@ -19,7 +19,7 @@ namespace CMFaux
     {
         private static readonly HttpSender Sender = new HttpSender();
         
-        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, SecureString pass) {
+        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string CertPath, SecureString pass) {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
@@ -74,7 +74,7 @@ namespace CMFaux
                 {
                     Console.WriteLine("Failed to enroll with an error");
                     Console.WriteLine(ex.Message);
-                    System.Windows.MessageBox.Show("we failed with" + ex.Message);
+                    System.Windows.MessageBox.Show(" We failed with " + ex.Message);
                     throw;
                 }
                 SmsClientId clientId = testclientId;

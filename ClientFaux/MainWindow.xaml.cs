@@ -166,7 +166,7 @@ namespace CMFaux
             System.Threading.Thread.Sleep(1500);
             FireProgress(thisIndex, "Starting Inventory...");
             
-            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password);
+            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CMServer, ThisClient.Name, DomainName, myPath, Password);
 
             //Update UI
             FireProgress(thisIndex, "SendingDiscovery");
