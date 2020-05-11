@@ -211,7 +211,7 @@ namespace CMFaux
 
         }
         public static void GetPolicy(string CMServerName, string ClientName, string domainName, string SiteCode,
-            string CertPath, SecureString pass, SmsClientId clientId)
+            string outPutDirectory, string CertPath, SecureString pass, SmsClientId clientId)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 

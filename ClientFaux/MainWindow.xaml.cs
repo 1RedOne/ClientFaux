@@ -173,7 +173,7 @@ namespace CMFaux
             FauxDeployCMAgent.SendDiscovery(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
 
             FireProgress(thisIndex, "RequestingPolicy");
-            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId);
+            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath,myPath, Password, clientId);
 
             FireProgress(thisIndex, "SendingCustom");
             FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
