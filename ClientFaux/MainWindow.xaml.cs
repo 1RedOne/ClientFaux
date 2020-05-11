@@ -23,22 +23,20 @@ namespace CMFaux
     {        
         public SecureString Password { get; private set; }
         public string BaseName { get; private set; }
-        public string CMServer { get; private set; }
+        public string CmServer { get; private set; }
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
-        public int maxThreads { get; private set; }
-        private int _idCounter = 1;
+        public int MaxThreads { get; private set; }
+        private int _idCounter;
         public int IdCounter
         {
-            get { return _idCounter; }
+            get => _idCounter;
             set
             {
-                if (value != _idCounter)
-                {
-                    _idCounter = value;
-                    OnPropertyChanged("IdCounter");
-                }
+                if (value == _idCounter) return;
+                _idCounter = value;
+                OnPropertyChanged("IdCounter");
             }
         }
 
@@ -85,10 +83,10 @@ namespace CMFaux
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             Password = PasswordBox.Password.ToSecureString();
             BaseName = NewClientName.Text;
-            CMServer = CMServerName.Text;
+            CmServer = CMServerName.Text;
             SiteCode = CMSiteCode.Text;
             ExportPath = FilePath.Text;
-            maxThreads = int.Parse(MaximumThreads.Text);
+            MaxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
             dgInventory.ItemsSource = customClientRecords;
             BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);
@@ -166,17 +164,16 @@ namespace CMFaux
             System.Threading.Thread.Sleep(1500);
             FireProgress(thisIndex, "Starting Inventory...");
             
-            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CMServer, ThisClient.Name, DomainName, myPath, Password);
+            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
-            //Update UI
             FireProgress(thisIndex, "SendingDiscovery");
-            FauxDeployCMAgent.SendDiscovery(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
+            FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId);
 
             FireProgress(thisIndex, "RequestingPolicy");
-            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath,myPath, Password, clientId);
+            //FauxDeployCMAgent.GetPolicy(CMServer, SiteCode, myPath, Password, clientId);
 
             FireProgress(thisIndex, "SendingCustom");
-            FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
+            FauxDeployCMAgent.SendCustomDiscovery(CmServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
 
             FireProgress(thisIndex, "Complete");
         }
@@ -201,7 +198,7 @@ namespace CMFaux
 
             var myTask = Task.Run(() =>
             {                
-                Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = maxThreads}, device =>
+                Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads}, device =>
                 {
                     Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
                     Devices.Add(ThisDevice);                    
@@ -232,8 +229,8 @@ namespace CMFaux
 
         private void CMServerName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CMServer= CMServerName.Text;
-            if (CMServer.Length.Equals(0))
+            CmServer= CMServerName.Text;
+            if (CmServer.Length.Equals(0))
             {
                 CMSettingsStatusLabel.Content = "CM Settings: ❌";
                 CreateClientsButton.Background = Brushes.PaleVioletRed;
@@ -330,7 +327,7 @@ namespace CMFaux
 
         private void MaximumThreads_TextChanged(object sender, TextChangedEventArgs e)
         {
-            maxThreads = int.Parse(MaximumThreads.Text);
+            MaxThreads = int.Parse(MaximumThreads.Text);
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
