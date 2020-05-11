@@ -58,6 +58,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Ref\Microsoft.ConfigurationManagement.Messaging.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ConfigurationManagement.Security.Cryptography, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Ref\Microsoft.ConfigurationManagement.Security.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="Pluralsight.Crypto, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Ref\Pluralsight.Crypto.dll</HintPath>
