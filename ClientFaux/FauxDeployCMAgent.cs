@@ -11,6 +11,7 @@ using Microsoft.ConfigurationManagement.Messaging.Messages.Server;
 using System.IO;
 using CERTENROLLLib;
 using System.Collections.ObjectModel;
+using System.Security;
 
 namespace CMFaux
 {
@@ -18,7 +19,7 @@ namespace CMFaux
     {
         private static readonly HttpSender Sender = new HttpSender();
         
-        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass) {
+        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, SecureString pass) {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
@@ -53,6 +54,7 @@ namespace CMFaux
                 registrationRequest.AgentIdentity = "MyCustomClient";
                 registrationRequest.ClientFqdn = ClientName + "." + DomainName;
                 registrationRequest.NetBiosName = ClientName;
+                //registrationRequest.Settings.SecurityMode = MessageSecurityMode.HttpsMode;
                 //registrationRequest.HardwareId = Guid.NewGuid().ToString();
                 Console.WriteLine("About to try to register " + registrationRequest.ClientFqdn);
 
@@ -81,7 +83,7 @@ namespace CMFaux
                 }
             }
 
-        public static void SendDiscovery(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass, SmsClientId clientId)
+        public static void SendDiscovery(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, SecureString pass, SmsClientId clientId)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
@@ -208,7 +210,8 @@ namespace CMFaux
             System.IO.Directory.Delete(ddmLocal, true);
 
         }
-        public static void GetPolicy(string CMServerName, string ClientName, string DomainName, string SiteCode, string outPutDirectory, string CertPath, string pass, SmsClientId clientId)
+        public static void GetPolicy(string CMServerName, string ClientName, string domainName, string SiteCode,
+            string CertPath, SecureString pass, SmsClientId clientId)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
@@ -216,7 +219,6 @@ namespace CMFaux
                 bool encryption = true;
                 bool replyCompression = true;
                 bool compression = true;
-                X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
                 ConfigMgrPolicyAssignmentRequest userPolicyMessage = new ConfigMgrPolicyAssignmentRequest();
 
                 userPolicyMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);

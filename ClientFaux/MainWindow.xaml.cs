@@ -11,6 +11,8 @@ using static CMFaux.CMFauxStatusViewClasses;
 using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace CMFaux
@@ -19,14 +21,14 @@ namespace CMFaux
     // to do : fix discovery 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {        
-        public string Password { get; private set; }
+        public SecureString Password { get; private set; }
         public string BaseName { get; private set; }
         public string CMServer { get; private set; }
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
         public int maxThreads { get; private set; }
-        private int _idCounter;
+        private int _idCounter = 1;
         public int IdCounter
         {
             get { return _idCounter; }
@@ -81,7 +83,7 @@ namespace CMFaux
             PasswordBox.Password = "Pa$$w0rd!";
             MaximumThreads.Text = "7";
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
-            Password = PasswordBox.Password;
+            Password = PasswordBox.Password.ToSecureString();
             BaseName = NewClientName.Text;
             CMServer = CMServerName.Text;
             SiteCode = CMSiteCode.Text;
@@ -94,6 +96,14 @@ namespace CMFaux
             Counter.SetBinding(ContentProperty, new Binding("IdCounter"));
             DataContext = this;
             DeviceCounter = 0;
+            string logPath = String.Concat(Directory.GetCurrentDirectory() + "CMLog.log");
+            System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
+
+            // Creates the new trace listener.
+
+            System.Diagnostics.TextWriterTraceListener myListener = new System.Diagnostics.TextWriterTraceListener(myTraceLog);
+
+            Trace.Listeners.Add(myListener);
         }
         private void FireProgress(int thisIndex, string statusMessage)
         {
@@ -163,7 +173,7 @@ namespace CMFaux
             FauxDeployCMAgent.SendDiscovery(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
 
             FireProgress(thisIndex, "RequestingPolicy");
-            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, ExportPath, myPath, Password, clientId);
+            FauxDeployCMAgent.GetPolicy(CMServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId);
 
             FireProgress(thisIndex, "SendingCustom");
             FauxDeployCMAgent.SendCustomDiscovery(CMServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
@@ -308,7 +318,7 @@ namespace CMFaux
 
         private void PWChanged(object sender, RoutedEventArgs args)
         {
-            Password = PasswordBox.Password;
+            Password = PasswordBox.Password.ToSecureString();
         }
 
         private void GetWait()

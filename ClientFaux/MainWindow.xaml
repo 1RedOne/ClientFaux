@@ -46,7 +46,7 @@
                                     <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" IsReadOnly="True" SortDirection="Descending"/>
                                             <DataGridTemplateColumn Header="Percentage Complete" Width="2*" MaxWidth="300">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
@@ -182,7 +182,7 @@
                             <Label>ConfigMgr Site Server Name</Label>
                             <TextBox ToolTip="The FQDN of your CM Primary Site, something like [SCCM.FoxDeploy.com]" Name="CMServerName" TextChanged="CMServerName_TextChanged">SCCM.FoxDeploy.local</TextBox>
                             <Label>ConfigMgr Site Code</Label>
-                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged">F0X</TextBox>
+                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged">FOX</TextBox>
                         </StackPanel>
                     </Grid>
                 </TabItem>
