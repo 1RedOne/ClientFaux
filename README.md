@@ -36,7 +36,6 @@ The client should appear within CM in ten seconds or so!  Hardware Inventory wil
 | Machine and User policy download |v 2.2| ---|
 | Machine and User policy viewing |v 2.x| ---|
 | Client HeartBeat Sending |v 2.x | ---|
-
 | Overload individual inventory items |v 3.x | ---|
 | Maintain localdb for future reuse of clients |v 3.x | ---|
 
