@@ -9,6 +9,9 @@ A tool for adding simulated CM Clients to ConfigMgr for collection querying, rep
 
 There is now practically no setup to the tool, simply download the newest release from releases above!  Run the installer then launch ClientFaux as a standard user account (or admin, doesn't matter).
 
+**Requires HTTP Mode enabled on Primary**
+*Working on allowing https mode, but presently only expected to work with a primary which allows http communications*
+
 Navigate to the `⚙CM Settings' tab and provide your CM Servers FQDN or netbios name, then the three letter site code.  The tool **will not** work without both.
 
 Then switch to the **Naming** tab and provide your client base name and the starting and ending device IDs you'd like to create in CM.
