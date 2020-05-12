@@ -117,7 +117,7 @@
                             <Label>Ending Number</Label>
                             <TextBox ToolTip="The ending digit when making multiple clients, something like [20]." Name="EndingNumber" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="45px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="textChangedEventHandler"></TextBox>
                             <Label>Maximum Threads</Label>
-                            <TextBox ToolTip="How many threads woudl you like to use?  Seven will max out even very beefy systems." Name="MaximumThreads" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="MaximumThreads_TextChanged"></TextBox>
+                            <TextBox ToolTip="How many threads would you like to use?  Seven will max out even very beefy systems." Name="MaximumThreads" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="MaximumThreads_TextChanged"></TextBox>
                             <Label>Number of Fake CM Clients to be created </Label>
                             <TextBlock Name="NumberOfClients" Foreground="#FF1053CD">Count will appear here</TextBlock>
                         </StackPanel>

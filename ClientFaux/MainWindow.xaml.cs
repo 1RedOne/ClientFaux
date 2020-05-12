@@ -79,7 +79,9 @@ namespace CMFaux
             InitializeComponent();
             FilePath.Text = System.IO.Directory.GetCurrentDirectory();
             PasswordBox.Password = "Pa$$w0rd!";
-            MaximumThreads.Text = "7";
+            MaximumThreads.Text = "4";
+            StartingNumber.Text = "1";
+            EndingNumber.Text = "21";
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             Password = PasswordBox.Password.ToSecureString();
             BaseName = NewClientName.Text;
@@ -103,46 +105,43 @@ namespace CMFaux
 
             Trace.Listeners.Add(myListener);
         }
-        private void FireProgress(int thisIndex, string statusMessage)
+        private void FireProgress(int thisIndex, string statusMessage, int percentageComplete)
         {
             Device ThisClient = Devices[thisIndex];
-            
+            ThisClient.ProcessProgress = percentageComplete;
             switch
                 (statusMessage)
             {
                 case "CreatingCert...":
                     ThisClient.Status = "Creating Cert...";
-                    ThisClient.ProcessProgress = 15;
                     break;
                 case "CertCreated":
                     ThisClient.ImageSource = "Images\\step02.png";
                     ThisClient.Status = "Registering...";
-                    ThisClient.ProcessProgress = 40;
+                    break;
+                case "Registering Client...":
+                    ThisClient.ImageSource = "Images\\step02.png";
+                    ThisClient.Status = "Starting Inventory...";
                     break;
                 case "Starting Inventory...":
                     ThisClient.ImageSource = "Images\\step02.png";
                     ThisClient.Status = "Starting Inventory...";
-                    ThisClient.ProcessProgress = 50;
                     break;
                 case "SendingDiscovery":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Sending Discovery...";
-                    ThisClient.ProcessProgress = 75;
                     break;
                 case "RequestingPolicy":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Requesting Policy...";
-                    ThisClient.ProcessProgress = 85;
                     break;
                 case "SendingCustom":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Sending Custom DDRs..";
-                    ThisClient.ProcessProgress = 95;
                     break;
                 case "Complete":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Complete!";
-                    ThisClient.ProcessProgress = 100;
                     break;
                     
                 default:
@@ -155,27 +154,27 @@ namespace CMFaux
             string ThisFilePath = System.IO.Directory.GetCurrentDirectory();
             Device ThisClient = Devices[thisIndex];
             //Update UI
-            FireProgress(thisIndex, "CreatingCert...");
+            FireProgress(thisIndex, "CreatingCert...", 15);
             X509Certificate2 newCert = FauxDeployCMAgent.CreateSelfSignedCertificate(ThisClient.Name);
             string myPath = ExportCert(newCert, ThisClient.Name, ThisFilePath);
 
             //Update UI
-            FireProgress(thisIndex, "CertCreated!");
+            FireProgress(thisIndex, "CertCreated!", 25);
             System.Threading.Thread.Sleep(1500);
-            FireProgress(thisIndex, "Starting Inventory...");
+            FireProgress(thisIndex, "Registering Client...", 30);
             
             SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
-            FireProgress(thisIndex, "SendingDiscovery");
+            FireProgress(thisIndex, "Starting Inventory...", 50);
             FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId);
 
-            FireProgress(thisIndex, "RequestingPolicy");
+            FireProgress(thisIndex, "RequestingPolicy", 75);
             //FauxDeployCMAgent.GetPolicy(CMServer, SiteCode, myPath, Password, clientId);
 
-            FireProgress(thisIndex, "SendingCustom");
+            FireProgress(thisIndex, "SendingCustom", 85);
             FauxDeployCMAgent.SendCustomDiscovery(CmServer, ThisClient.Name, SiteCode, ThisFilePath, CustomClientRecords);
 
-            FireProgress(thisIndex, "Complete");
+            FireProgress(thisIndex, "Complete", 100);
         }
 
         private async void CreateClientsButton_Click(object sender, RoutedEventArgs e)

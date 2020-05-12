@@ -75,7 +75,7 @@ namespace CMFaux
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
-                X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
+                //X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
 
@@ -141,6 +141,8 @@ namespace CMFaux
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
                 hinvMessage.Settings.HostName = CMServerName;
                 hinvMessage.SmsId = clientId;
+                hinvMessage.Settings.Compression = MessageCompression.Zlib;
+                hinvMessage.Settings.ReplyCompression = MessageCompression.Zlib;
                 //hinvMessage.Settings.Security.EncryptMessage = true;
                 hinvMessage.Discover();
 
@@ -148,7 +150,7 @@ namespace CMFaux
                 foreach (string Class in Classes)
                 {
 
-                    Console.WriteLine($"---Adding class : [{Class}]");
+                    //Console.WriteLine($"---Adding class : [{Class}]");
                     try { hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", Class)); }
                     catch { Console.WriteLine($"!!!Adding class : [{Class}] :( not found on this system"); }
                 }
