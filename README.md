@@ -7,6 +7,9 @@ A tool for adding simulated CM Clients to ConfigMgr for collection querying, rep
 
 ### Setting up the environment
 
+**Requires HTTP Mode enabled on Primary**
+*Working on allowing https mode, but presently only expected to work with a primary which allows http communications*
+
 There is now practically no setup to the tool, simply download the newest release from releases above!  Run the installer then launch ClientFaux as a standard user account (or admin, doesn't matter).
 
 Navigate to the `⚙CM Settings' tab and provide your CM Servers FQDN or netbios name, then the three letter site code.  The tool **will not** work without both.
@@ -29,10 +32,10 @@ The client should appear within CM in ten seconds or so!  Hardware Inventory wil
 | Working Client Inventory | [v1.0](https://github.com/1RedOne/ClientFaux/releases/tag/v1.0) | ✔️|
 | WPF GUI | v2.0  | ✔️ |
 | User Custom Client Discovery Values |[v2.1](https://github.com/1RedOne/ClientFaux/releases/tag/v2.1.0)| ✔️|
+| Support for compression  |v 2.2 | ✔️|
 | Machine and User policy download |v 2.2| ---|
 | Machine and User policy viewing |v 2.x| ---|
 | Client HeartBeat Sending |v 2.x | ---|
-| Support for compression  |v 2.x| ---|
 | Overload individual inventory items |v 3.x | ---|
 | Maintain localdb for future reuse of clients |v 3.x | ---|
 
@@ -44,7 +47,11 @@ Custom DDM now works too!
 
 All devices created with ClientFaux recieve the custom DDR property of `ClientType : FakeClient`, you can use this property to exclude all fake Clients, or to exclude them instead in your reports and Collections.
 
+### Troubleshooting 
+
+Check `DDM.Log` and `mpcontrol.log` on the ConfigMgr primary site for troubleshooting information.  Now also creates client side logging as well, which will be found in the working directory of the app, as `DebugCMLog.log`
+
 # Warning
 This is meant for TestLab use only.  Proceed with caution
 
-*tested on ConfigrMgr Current Branch v1810*
+*tested on ConfigrMgr Current Branch v2002*
