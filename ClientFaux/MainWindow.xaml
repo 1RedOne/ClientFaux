@@ -41,7 +41,9 @@
                             <Label Name="PerformInventoryLabel" FontSize="16">Perform In-depth Discovery (Slower): ✔</Label>
                             <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click"/>
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
-                            <Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/>
+                            <TextBlock><Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/>/<Label Name="TotalCounter" FontSize="24" Content="{Binding CalculatedClientsCount}"/></TextBlock>
+                            
+                            
                             <Expander Name="DeviceExpander" >
                                 <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700">
                                     <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500">

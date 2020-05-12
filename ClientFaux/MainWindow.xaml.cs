@@ -27,6 +27,7 @@ namespace CMFaux
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
+        public string CalculatedClientsCount { get; set; }
         public bool InventoryIsChecked { get; set; }
         public int MaxThreads { get; private set; }
         private int _idCounter;
@@ -185,9 +186,12 @@ namespace CMFaux
 
             string BaseName = NewClientName.Text;
             int CountOfMachines = (Int32.TryParse(NumberOfClients.Text, out int unUsed)) ? Int32.Parse(NumberOfClients.Text) : 1;
+            
+            
             int BeginningWith = (!StartingNumber.Text.Length.Equals(0)) ? Int32.Parse(StartingNumber.Text) : 0;
             List<String> DeviceList = new List<string>();
-
+            int current = 0;
+            object lockCurrent = new object();
             var progress = new Progress<int>(_ => IdCounter++) as IProgress<int>;
 
             for (int i = BeginningWith; i < CountOfMachines; i++)
@@ -198,17 +202,42 @@ namespace CMFaux
             }
 
             var myTask = Task.Run(() =>
-            {                
-                Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads}, device =>
-                {
-                    Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
-                    Devices.Add(ThisDevice);                    
-                    int thisIndex = devices.IndexOf(ThisDevice);
-                    RegisterClient(thisIndex);
+            {
+                //Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads}, device =>
+                //{
+                //    Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                //    Devices.Add(ThisDevice);                    
+                //    int thisIndex = devices.IndexOf(ThisDevice);
+                //    RegisterClient(thisIndex);
 
-                    progress.Report(0);
-             
-                });             
+                //    progress.Report(0);
+
+                //});             
+                Parallel.For(0, DeviceList.Count,
+                    new ParallelOptions { MaxDegreeOfParallelism = MaxThreads },
+                    (ii, loopState) =>
+                    {
+                       
+                        // So the way Parallel.For works is that it chunks the task list up with each thread getting a chunk to work on...
+                        // e.g. [1-1,000], [1,001- 2,000], [2,001-3,000] etc...
+                        // We have prioritized our job queue such that more important tasks come first. So we don't want the task list to be
+                        // broken up, we want the task list to be run in roughly the same order we started with. So we ignore tha past in 
+                        // loop variable and just increment our own counter.
+                        int thisCurrent = 0;
+                        lock (lockCurrent)
+                        {
+                            thisCurrent = current;
+                            current++;
+                        }
+                        string device = DeviceList[thisCurrent];
+                        Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
+                        Devices.Add(ThisDevice);
+                        int thisIndex = devices.IndexOf(ThisDevice);
+                        RegisterClient(thisIndex);
+
+                        progress.Report(0);
+                    });
+
             });
 
             await myTask;            
@@ -309,9 +338,11 @@ namespace CMFaux
             }
             int StartingNo = Int32.Parse(StartingNumber.Text);
             int EndingNo = Int32.Parse(EndingNumber.Text);
-            NumberOfClients.Text = (Math.Abs(
+            CalculatedClientsCount = (Math.Abs(
                 (EndingNo - StartingNo))).ToString();
-            Console.WriteLine("Generating " + NumberOfClients.Text + " new clients");
+            NumberOfClients.Text = CalculatedClientsCount;
+
+            Console.WriteLine("Generating " + CalculatedClientsCount + " new clients");
         }
 
         private void PWChanged(object sender, RoutedEventArgs args)
