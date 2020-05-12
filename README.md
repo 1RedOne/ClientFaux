@@ -47,6 +47,10 @@ Custom DDM now works too!
 
 All devices created with ClientFaux recieve the custom DDR property of `ClientType : FakeClient`, you can use this property to exclude all fake Clients, or to exclude them instead in your reports and Collections.
 
+### Troubleshooting 
+
+Check `DDM.Log` and `mpcontrol.log` on the ConfigMgr primary site for troubleshooting information.  Now also creates client side logging as well, which will be found in the working directory of the app, as `DebugCMLog.log`
+
 # Warning
 This is meant for TestLab use only.  Proceed with caution
 
