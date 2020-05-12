@@ -130,12 +130,6 @@ namespace CMFaux
                     ddrMessage.DdrInstances.Add(instance);
                 }
 
-                //foreach (InventoryReportBodyElement Record in ddrMessage.DdrInstances)
-                //{                 
-                //    //Debug.WriteLine(Record.ToString());
-                //}
-                //ddrMessage.DdrInstances.Count
-                // Now send the message to the MP (it's asynchronous so there won't be a reply)
                 ddrMessage.SendMessage(Sender);
 
                 ConfigMgrHardwareInventoryMessage hinvMessage = new ConfigMgrHardwareInventoryMessage();
@@ -149,8 +143,6 @@ namespace CMFaux
                 var Classes = CMFauxStatusViewClasses.GetWMIClasses();                
                 foreach (string Class in Classes)
                 {
-
-                    //Console.WriteLine($"---Adding class : [{Class}]");
                     try { hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", Class)); }
                     catch { Console.WriteLine($"!!!Adding class : [{Class}] :( not found on this system"); }
                 }

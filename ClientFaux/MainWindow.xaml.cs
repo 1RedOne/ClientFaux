@@ -27,6 +27,7 @@ namespace CMFaux
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
+        public bool InventoryIsChecked { get; set; }
         public int MaxThreads { get; private set; }
         private int _idCounter;
         public int IdCounter
@@ -88,6 +89,7 @@ namespace CMFaux
             CmServer = CMServerName.Text;
             SiteCode = CMSiteCode.Text;
             ExportPath = FilePath.Text;
+            InventoryIsChecked = InventoryCheck.IsChecked.Value;
             MaxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
             dgInventory.ItemsSource = customClientRecords;
@@ -166,7 +168,7 @@ namespace CMFaux
             SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
             FireProgress(thisIndex, "Starting Inventory...", 50);
-            FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId);
+            FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId, InventoryIsChecked);
 
             FireProgress(thisIndex, "RequestingPolicy", 75);
             //FauxDeployCMAgent.GetPolicy(CMServer, SiteCode, myPath, Password, clientId);
@@ -320,7 +322,7 @@ namespace CMFaux
         private void GetWait()
         {
             Random random = new Random();
-            int w = random.Next(3, 15);
+            int w = random.Next(3, 7);
             System.Threading.Thread.Sleep(100 * w);
         }
 
@@ -344,6 +346,12 @@ namespace CMFaux
             {
                 row.DetailsVisibility = row.IsSelected ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
             }
+        }
+
+        private void InventoryCheck_Click(object sender, RoutedEventArgs e)
+        {
+            InventoryIsChecked = InventoryCheck.IsChecked.Value;
+            PerformInventoryLabel.Content = (InventoryIsChecked) ? "Perform In-depth Discovery (Slower): ✔" : "Perform In-depth Discovery (Slower): ❌";
         }
     }
 }
