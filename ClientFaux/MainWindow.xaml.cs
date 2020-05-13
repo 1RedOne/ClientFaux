@@ -29,6 +29,7 @@ namespace CMFaux
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
         public bool InventoryIsChecked { get; set; }
+        public bool noisy { get; set; }
         public int MaxThreads { get; private set; }
 
         private string _calculatedClientsCount;
@@ -101,6 +102,7 @@ namespace CMFaux
             SiteCode = CMSiteCode.Text;
             ExportPath = FilePath.Text;
             InventoryIsChecked = InventoryCheck.IsChecked.Value;
+            noisy = noisyCheck.IsChecked.Value;
             MaxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
             dgInventory.ItemsSource = CustomClientRecords;
@@ -178,15 +180,22 @@ namespace CMFaux
             FireProgress(thisIndex, "CertCreated!", 25);
             System.Threading.Thread.Sleep(1500);
             FireProgress(thisIndex, "Registering Client...", 30);
-            SmsClientId clientId;
+            SmsClientId clientId; //= FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
+            
             try
             {
                 clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
             }
-            catch
+            catch (Exception e)
             {
+                if (noisy)
+                {
+                    System.Windows.MessageBox.Show(" We failed with " + e.Message);
+                    throw e;
+                }
                 FireProgress(thisIndex, "ManagementPointErrorResponse...", 100);
                 return;
+
             }
             //SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
@@ -386,6 +395,11 @@ namespace CMFaux
         {
             InventoryIsChecked = InventoryCheck.IsChecked.Value;
             PerformInventoryLabel.Content = (InventoryIsChecked) ? "Perform In-depth Discovery (Slower): ✔" : "Perform In-depth Discovery (Slower): ❌";
+        }
+
+        private void noisyCheck_Click(object sender, RoutedEventArgs e)
+        {
+            noisy = InventoryCheck.IsChecked.Value;
         }
     }
 }
