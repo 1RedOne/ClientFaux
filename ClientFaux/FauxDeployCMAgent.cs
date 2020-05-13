@@ -39,30 +39,14 @@ namespace CMFaux
                 registrationRequest.AgentIdentity = "MyCustomClient";
                 registrationRequest.ClientFqdn = ClientName + "." + DomainName;
                 registrationRequest.NetBiosName = ClientName;
-                //registrationRequest.Settings.SecurityMode = MessageSecurityMode.HttpsMode;
-                //registrationRequest.HardwareId = Guid.NewGuid().ToString();
                 Console.WriteLine("About to try to register " + registrationRequest.ClientFqdn);
 
                 // Register client and wait for a confirmation with the SMSID
 
-                //registrationRequest.Settings.Security.AuthenticationType = AuthenticationType.WindowsAuth;
-
                 registrationRequest.Settings.Compression = MessageCompression.Zlib;
                 registrationRequest.Settings.ReplyCompression = MessageCompression.Zlib;
 
-                SmsClientId testclientId = new SmsClientId();
-                try
-                {
-                    testclientId = registrationRequest.RegisterClient(Sender, TimeSpan.FromMinutes(5));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Failed to enroll with an error");
-                    Console.WriteLine(ex.Message);
-                    System.Windows.MessageBox.Show(" We failed with " + ex.Message);
-                    throw;
-                }
-                SmsClientId clientId = testclientId;
+                SmsClientId clientId = registrationRequest.RegisterClient(Sender, TimeSpan.FromMinutes(5));
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
                 return clientId;
             }
