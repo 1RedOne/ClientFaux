@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 
@@ -27,9 +28,22 @@ namespace CMFaux
         public string SiteCode { get; private set; }
         public string DomainName { get; private set; }
         public string ExportPath { get; private set; }
-        public string CalculatedClientsCount { get; set; }
         public bool InventoryIsChecked { get; set; }
         public int MaxThreads { get; private set; }
+
+        private string _calculatedClientsCount;
+
+        public string CalculatedClientsCount
+        {
+            get => _calculatedClientsCount;
+            set
+            {
+                if (value == _calculatedClientsCount) return;
+                _calculatedClientsCount = value;
+                OnPropertyChanged("CalculatedClientsCount");
+            }
+        }
+
         private int _idCounter;
         public int IdCounter
         {
@@ -45,22 +59,18 @@ namespace CMFaux
         private int _DeviceCounter { get; set; }
         public int DeviceCounter
         {
-            get { return _DeviceCounter; }
+            get => _DeviceCounter;
             set
             {
-                if (value != _DeviceCounter)
-                {
-                    _DeviceCounter = value;
-                    OnPropertyChanged("DeviceCounter");
-                }
+                if (value == _DeviceCounter) return;
+                _DeviceCounter = value;
+                OnPropertyChanged("DeviceCounter");
             }
         }
-        
-        internal ObservableCollection<Device> Devices { get => devices; set => devices = value; }    
-        private ObservableCollection<Device> devices = new ObservableCollection<Device>();
-        
-        internal ObservableCollection<CustomClientRecord> CustomClientRecords { get => customClientRecords; set => customClientRecords = value; }
-        private ObservableCollection<CustomClientRecord> customClientRecords = new ObservableCollection<CustomClientRecord> {
+
+        internal ObservableCollection<Device> Devices { get; set; } = new ObservableCollection<Device>();
+
+        internal ObservableCollection<CustomClientRecord> CustomClientRecords { get; set; } = new ObservableCollection<CustomClientRecord> {
             new CustomClientRecord(){ RecordName="ClientKind", RecordValue="FakeClient" }
         };
 
@@ -93,7 +103,7 @@ namespace CMFaux
             InventoryIsChecked = InventoryCheck.IsChecked.Value;
             MaxThreads = int.Parse(MaximumThreads.Text);
             dgDevices.ItemsSource = Devices;
-            dgInventory.ItemsSource = customClientRecords;
+            dgInventory.ItemsSource = CustomClientRecords;
             BindingOperations.EnableCollectionSynchronization(Devices, _syncLock);
             BindingOperations.EnableCollectionSynchronization(CustomClientRecords, _syncLock);
             Counter.SetBinding(ContentProperty, new Binding("IdCounter"));
@@ -146,7 +156,10 @@ namespace CMFaux
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Complete!";
                     break;
-                    
+                case "ManagementPointErrorResponse...":
+                    ThisClient.ImageSource = "Images\\step03.png";
+                    ThisClient.Status = "Skipping!";
+                    break;
                 default:
                     break;
             }
@@ -165,8 +178,17 @@ namespace CMFaux
             FireProgress(thisIndex, "CertCreated!", 25);
             System.Threading.Thread.Sleep(1500);
             FireProgress(thisIndex, "Registering Client...", 30);
-            
-            SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
+            SmsClientId clientId;
+            try
+            {
+                clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
+            }
+            catch
+            {
+                FireProgress(thisIndex, "ManagementPointErrorResponse...", 100);
+                return;
+            }
+            //SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
             FireProgress(thisIndex, "Starting Inventory...", 50);
             FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId, InventoryIsChecked);
@@ -186,43 +208,24 @@ namespace CMFaux
 
             string BaseName = NewClientName.Text;
             int CountOfMachines = (Int32.TryParse(NumberOfClients.Text, out int unUsed)) ? Int32.Parse(NumberOfClients.Text) : 1;
-            
-            
             int BeginningWith = (!StartingNumber.Text.Length.Equals(0)) ? Int32.Parse(StartingNumber.Text) : 0;
             List<String> DeviceList = new List<string>();
             int current = 0;
             object lockCurrent = new object();
             var progress = new Progress<int>(_ => IdCounter++) as IProgress<int>;
 
-            for (int i = BeginningWith; i <= CountOfMachines; i++)
+            for (int i = BeginningWith; i < CountOfMachines; i++)
             {
                 string ThisClient = BaseName + i;
                 DeviceList.Add(ThisClient);
-
             }
 
             var myTask = Task.Run(() =>
             {
-                //Parallel.ForEach(DeviceList, new ParallelOptions { MaxDegreeOfParallelism = MaxThreads}, device =>
-                //{
-                //    Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
-                //    Devices.Add(ThisDevice);                    
-                //    int thisIndex = devices.IndexOf(ThisDevice);
-                //    RegisterClient(thisIndex);
-
-                //    progress.Report(0);
-
-                //});             
                 Parallel.For(0, DeviceList.Count,
                     new ParallelOptions { MaxDegreeOfParallelism = MaxThreads },
                     (ii, loopState) =>
                     {
-                       
-                        // So the way Parallel.For works is that it chunks the task list up with each thread getting a chunk to work on...
-                        // e.g. [1-1,000], [1,001- 2,000], [2,001-3,000] etc...
-                        // We have prioritized our job queue such that more important tasks come first. So we don't want the task list to be
-                        // broken up, we want the task list to be run in roughly the same order we started with. So we ignore tha past in 
-                        // loop variable and just increment our own counter.
                         int thisCurrent = 0;
                         lock (lockCurrent)
                         {
@@ -232,7 +235,7 @@ namespace CMFaux
                         string device = DeviceList[thisCurrent];
                         Device ThisDevice = new Device() { Name = device, Status = "Starting...", ImageSource = "Images\\step01.png", ProcessProgress = 10 };
                         Devices.Add(ThisDevice);
-                        int thisIndex = devices.IndexOf(ThisDevice);
+                        int thisIndex = Devices.IndexOf(ThisDevice);
                         RegisterClient(thisIndex);
 
                         progress.Report(0);
@@ -338,8 +341,8 @@ namespace CMFaux
             }
             int StartingNo = Int32.Parse(StartingNumber.Text);
             int EndingNo = Int32.Parse(EndingNumber.Text);
-            CalculatedClientsCount = (Math.Abs(
-                (EndingNo - StartingNo))).ToString();
+            CalculatedClientsCount = Enumerable.Range(StartingNo, EndingNo).ToList().Count.ToString();
+
             NumberOfClients.Text = CalculatedClientsCount;
 
             Console.WriteLine("Generating " + CalculatedClientsCount + " new clients");
