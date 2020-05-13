@@ -49,7 +49,7 @@ All devices created with ClientFaux recieve the custom DDR property of `ClientTy
 
 ### Troubleshooting 
 
-Check `DDM.Log` and `mpcontrol.log` on the ConfigMgr primary site for troubleshooting information.  Now also creates client side logging as well, which will be found in the working directory of the app, as `DebugCMLog.log`
+Check `DDM.Log` and `mpcontrol.log` on the ConfigMgr primary site for troubleshooting information and also the `\SMS_CCM\Logs\MP_RegistrationManager.log` file for additional troubleshooting.  Now also creates client side logging as well, which will be found in the working directory of the app, as `DebugCMLog.log`
 
 # Warning
 This is meant for TestLab use only.  Proceed with caution
