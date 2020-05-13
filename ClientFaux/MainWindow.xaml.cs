@@ -194,7 +194,7 @@ namespace CMFaux
             object lockCurrent = new object();
             var progress = new Progress<int>(_ => IdCounter++) as IProgress<int>;
 
-            for (int i = BeginningWith; i < CountOfMachines; i++)
+            for (int i = BeginningWith; i <= CountOfMachines; i++)
             {
                 string ThisClient = BaseName + i;
                 DeviceList.Add(ThisClient);
