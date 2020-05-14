@@ -1,4 +1,4 @@
-![ClientFaux logo, think 'sly like a fox'](https://github.com/1RedOne/ClientFaux/blob/master/ClientFaux/Images/CMFoxv1.0Logo.png)
+![ClientFaux logo, think 'sly like a fox'](https://github.com/1RedOne/ClientFaux/raw/master/Images/ClientFaux2.2.png)
 
 # ClientFaux - Client Simulation Tool
 A tool for adding simulated CM Clients to ConfigMgr for collection querying, report building, and testing ConfigMgr environments.  [Read the blog post here.](https://foxdeploy.com/2018/06/08/how-to-populate-cm-with-fake-clients/)
