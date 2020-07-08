@@ -15,13 +15,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
+using log4net;
 
 namespace CMFaux
 {
 
     // to do : fix discovery 
     public partial class MainWindow : Window, INotifyPropertyChanged
-    {        
+    {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public SecureString Password { get; private set; }
         public string BaseName { get; private set; }
         public string CmServer { get; private set; }
@@ -33,7 +35,7 @@ namespace CMFaux
         public int MaxThreads { get; private set; }
 
         private string _calculatedClientsCount;
-
+        
         public string CalculatedClientsCount
         {
             get => _calculatedClientsCount;
@@ -84,13 +86,17 @@ namespace CMFaux
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(name));
+                log.Info($"Changing property {name}");
             }
         }
 
         public MainWindow()
         {
             InitializeComponent();
+            log4net.Config.XmlConfigurator.Configure();
             FilePath.Text = System.IO.Directory.GetCurrentDirectory();
+            log.Info("In MainWindow.xaml");
+
             PasswordBox.Password = "Pa$$w0rd!";
             MaximumThreads.Text = "4";
             StartingNumber.Text = "1";
@@ -124,6 +130,7 @@ namespace CMFaux
         {
             Device ThisClient = Devices[thisIndex];
             ThisClient.ProcessProgress = percentageComplete;
+            log.Info($"Updating item {ThisClient.Name} to state {statusMessage}");
             switch
                 (statusMessage)
             {
@@ -171,23 +178,26 @@ namespace CMFaux
             GetWait();
             string ThisFilePath = System.IO.Directory.GetCurrentDirectory();
             Device ThisClient = Devices[thisIndex];
+            log.Info($"[{ThisClient.Name}] - Beginning to process");
             //Update UI
             FireProgress(thisIndex, "CreatingCert...", 15);
+            log.Info($"[{ThisClient.Name}] - About to generate cert at {ThisFilePath}...");
             X509Certificate2 newCert = FauxDeployCMAgent.CreateSelfSignedCertificate(ThisClient.Name);
             string myPath = ExportCert(newCert, ThisClient.Name, ThisFilePath);
-
+            log.Info($"[{ThisClient.Name}] - Cert generated at {myPath}!");
             //Update UI
             FireProgress(thisIndex, "CertCreated!", 25);
             System.Threading.Thread.Sleep(1500);
             FireProgress(thisIndex, "Registering Client...", 30);
-            SmsClientId clientId; //= FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
-            
+            SmsClientId clientId;
+            log.Info($"[{ThisClient.Name}] - About to register with CM...");
             try
             {
-                clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
+                clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password, log);
             }
             catch (Exception e)
             {
+                log.Error($"[{ThisClient.Name}] - Failed to register with {e.Message}...");
                 if (noisy)
                 {
                     System.Windows.MessageBox.Show(" We failed with " + e.Message);
@@ -400,6 +410,11 @@ namespace CMFaux
         private void noisyCheck_Click(object sender, RoutedEventArgs e)
         {
             noisy = InventoryCheck.IsChecked.Value;
+        }
+
+        private void viewLogs_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(@".\Cm_Faux.log");
         }
     }
 }

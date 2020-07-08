@@ -168,6 +168,7 @@
                             <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged">FOX</TextBox>
                             <Label Margin="15,0,0,0">Throw error messages?</Label>
                             <CheckBox Name="noisyCheck" Margin="15,0,0,0" Click="noisyCheck_Click"></CheckBox>
+                            <Button Name="viewLogs" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>

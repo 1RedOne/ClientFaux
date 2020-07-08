@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Management;
 using System.Security;
 using System.Xml;
+using log4net;
 
 namespace CMFaux
 {
@@ -21,7 +22,7 @@ namespace CMFaux
     {
         private static readonly HttpSender Sender = new HttpSender();
         
-        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string CertPath, SecureString pass) {
+        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string CertPath, SecureString pass, ILog log) {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
             {
                 // Create a registration request
@@ -31,9 +32,8 @@ namespace CMFaux
                 registrationRequest.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 // Set the destination hostname
                 registrationRequest.Settings.HostName = CMServerName;
-
-                Console.WriteLine("Trying to reach: " + CMServerName);
-
+                
+                log.Info($"[{ClientName}] - Running Discovery...");
                 // Discover local properties for registration metadata
                 registrationRequest.Discover();
                 registrationRequest.AgentIdentity = "MyCustomClient";
@@ -45,8 +45,9 @@ namespace CMFaux
 
                 registrationRequest.Settings.Compression = MessageCompression.Zlib;
                 registrationRequest.Settings.ReplyCompression = MessageCompression.Zlib;
-
+                log.Info($"[{ClientName}] - Message Zipped successfully, registering...");
                 SmsClientId clientId = registrationRequest.RegisterClient(Sender, TimeSpan.FromMinutes(5));
+                log.Info($"[{ClientName}] - Got SMSID from CM Server for this client of {clientId}...");
                 Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
                 return clientId;
             }
