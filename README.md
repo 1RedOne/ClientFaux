@@ -21,7 +21,7 @@ Then hit 'Ready' from the main tab when you're ready to go!
 The client should appear within CM in ten seconds or so!  Hardware Inventory will take a bit longer to appear.
 
 
-#### What's here
+#### Feature Roadmap
 
 | Feature  |  Version | Done? |
 |---|---|---|
@@ -33,11 +33,13 @@ The client should appear within CM in ten seconds or so!  Hardware Inventory wil
 | WPF GUI | v2.0  | ✔️ |
 | User Custom Client Discovery Values |[v2.1](https://github.com/1RedOne/ClientFaux/releases/tag/v2.1.0)| ✔️|
 | Support for compression  |v 2.2 | ✔️|
-| Machine and User policy download |v 2.2| ---|
-| Machine and User policy viewing |v 2.x| ---|
-| Client HeartBeat Sending |v 2.x | ---|
-| Overload individual inventory items |v 3.x | ---|
-| Maintain localdb for future reuse of clients |v 3.x | ---|
+| Logging |[v3.0](https://github.com/1RedOne/ClientFaux/releases/tag/v3.0)| ✔️|
+| Integrated Installer |[v3.0](https://github.com/1RedOne/ClientFaux/releases/tag/v3.0)| ✔️|
+| Save Settings |v3.1 | --- ||
+| Custom Inventory of apps | --- | ---|
+| Machine and User policy viewing  | --- | ---|
+| Client HeartBeat Sending | --- | ---|
+| Reusable Clients   | --- | ---|
 
 Custom DDM now works too!
 
