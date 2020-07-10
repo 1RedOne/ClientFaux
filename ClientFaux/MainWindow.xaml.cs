@@ -100,7 +100,7 @@ namespace CMFaux
             PasswordBox.Password = "Pa$$w0rd!";
             MaximumThreads.Text = "4";
             StartingNumber.Text = "1";
-            EndingNumber.Text = "21";
+            EndingNumber.Text = "20";
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             Password = PasswordBox.Password.ToSecureString();
             BaseName = NewClientName.Text;
@@ -233,7 +233,7 @@ namespace CMFaux
             object lockCurrent = new object();
             var progress = new Progress<int>(_ => IdCounter++) as IProgress<int>;
 
-            for (int i = BeginningWith; i < CountOfMachines; i++)
+            for (int i = BeginningWith; i <= CountOfMachines; i++)
             {
                 string ThisClient = BaseName + i;
                 DeviceList.Add(ThisClient);
@@ -414,7 +414,7 @@ namespace CMFaux
 
         private void viewLogs_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(@".\Cm_Faux.log");
+            System.Diagnostics.Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\ClientFaux.log");
         }
     }
 }

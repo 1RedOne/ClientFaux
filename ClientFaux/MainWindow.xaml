@@ -32,15 +32,16 @@
                             <RowDefinition Height="500*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="700" />
+                            <ColumnDefinition Width="550" />
                         </Grid.ColumnDefinitions>
-                        <Image Source="Images\CMFoxv1.0Logo.png" Stretch="Fill" Grid.Row="0" Grid.ColumnSpan="2"></Image>
+                        <Image Source="Images\ClientFaux3.0.png" HorizontalAlignment="Left" Grid.Row="0" Grid.ColumnSpan="2"></Image>
                         <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" Margin="10" Grid.Row="1">
                             <TextBlock TextWrapping="WrapWithOverflow" FontSize="16">When both are checked off, we're ready to go!</TextBlock>
                             <Label Name="CMSettingsStatusLabel" FontSize="16">CM Settings: ✔</Label>
                             <Label Name="DeviceNameStatusLabel" FontSize="16">Device Naming: ✔</Label>
                             <Label Name="PerformInventoryLabel" FontSize="16">Perform In-depth Discovery (Slower): ✔</Label>
                             <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click"/>
+                            <Button Name="viewLogs2" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left"/>
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
                             <TextBlock><Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/><Label FontSize="24">/</Label><Label Name="TotalCounter" FontSize="24" Content="{Binding CalculatedClientsCount}"/></TextBlock>
                         </StackPanel>
