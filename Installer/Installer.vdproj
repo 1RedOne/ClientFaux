@@ -45,6 +45,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A16ABF8A89CD44B18525FD951C42ECD5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A25FEDED47361DEE30A17ABDD55246E6"
         "OwnerKey" = "8:_6FE8AE86E4F64C1394B701FFA70A2DA7"
         "MsmSig" = "8:_UNDEFINED"
@@ -59,6 +65,12 @@
         {
         "MsmKey" = "8:_A8E373AF546473177306913F8DD5D6A7"
         "OwnerKey" = "8:_6FE8AE86E4F64C1394B701FFA70A2DA7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -274,6 +286,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A16ABF8A89CD44B18525FD951C42ECD5"
+            {
+            "SourcePath" = "8:..\\Images\\ClientFaux3.0.jpg"
+            "TargetName" = "8:ClientFaux3.0.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_3B0F886214D84E88A2F9647FC2A28973"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A25FEDED47361DEE30A17ABDD55246E6"
             {
             "AssemblyRegister" = "3:1"
@@ -354,6 +386,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F82FA8ACF85645E082B8759D07B5D35A"
+            {
+            "SourcePath" = "8:..\\ClientFaux\\Images\\FoxDeploy Client Faux Bannerv3.jpg"
+            "TargetName" = "8:FoxDeploy Client Faux Bannerv3.jpg"
+            "Tag" = "8:"
+            "Folder" = "8:_3B0F886214D84E88A2F9647FC2A28973"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FCA033CB95EBCB9F682F3653FB3C3D03"
@@ -444,7 +496,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ClientFaux"
         "ProductCode" = "8:{68EF8AF1-B6F2-4744-AE7D-B3B00C855946}"
-        "PackageCode" = "8:{7EBDF958-72E6-4011-867D-750CD63AF124}"
+        "PackageCode" = "8:{1925D2BE-4A53-4ADE-A180-2E272A91AD84}"
         "UpgradeCode" = "8:{4FCFACEC-5EA3-4510-B5A0-55F974B5E02F}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -642,7 +694,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -664,7 +717,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -688,8 +742,8 @@
                             "Type" = "3:3"
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1203"
+                            "Setting" = "3:2"
+                            "Value" = "8:"
                             "DefaultValue" = "8:#1203"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -712,7 +766,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "EulaText"
@@ -759,7 +814,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "InstallAllUsersVisible"
@@ -954,7 +1010,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "UpdateText"
@@ -998,7 +1055,8 @@
                             "Type" = "3:8"
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
-                            "Setting" = "3:1"
+                            "Setting" = "3:2"
+                            "Value" = "8:_F82FA8ACF85645E082B8759D07B5D35A"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
