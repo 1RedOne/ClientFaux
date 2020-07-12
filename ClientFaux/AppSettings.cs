@@ -1,4 +1,10 @@
 
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Windows.Controls.Primitives;
+
 namespace CMFaux
 {
     public class AppSettings
@@ -7,51 +13,24 @@ namespace CMFaux
         public string cmServerCode { get; set; }
         public string baseNamePtrn { get; set; }
 
-
         public void Save(string filename)
         {
-            using (StreamWriter sw = new StreamWriter(filename))
-            {
-                XmlSerializer xmls = new XmlSerializer(typeof(MySettings));
-                xmls.Serialize(sw, this);
-            }
+            string json = JsonConvert.SerializeObject(this);
+
+            //write string to file
+            System.IO.File.WriteAllText(filename, json);
         }
-        public MySettings Read(string filename)
+
+        public AppSettings Read(string filename)
         {
-            using (StreamReader sw = new StreamReader(filename))
+            var items = new AppSettings();
+            using (StreamReader r = new StreamReader(filename))
             {
-                XmlSerializer xmls = new XmlSerializer(typeof(MySettings));
-                return xmls.Deserialize(sw) as MySettings;
+                string json = r.ReadToEnd();
+                items = JsonConvert.DeserializeObject<AppSettings>(json);
             }
+            return items;
+
         }
     }
-    //And here is how to use it. It's possible to load default values or override them with the user's settings by just checking if user settings exist:
-
-    public class MyApplicationLogic
-    {
-        public const string UserSettingsFilename = "settings.xml";
-        public string _DefaultSettingspath =
-            Assembly.GetEntryAssembly().Location +
-            "\\Settings\\" + UserSettingsFilename;
-
-        public string _UserSettingsPath =
-            Assembly.GetEntryAssembly().Location +
-            "\\Settings\\UserSettings\\" +
-            UserSettingsFilename;
-
-        public MyApplicationLogic()
-        {
-            // if default settings exist
-            if (File.Exists(_UserSettingsPath))
-                this.Settings = Settings.Read(_UserSettingsPath);
-            else
-                this.Settings = Settings.Read(_DefaultSettingspath);
-        }
-        public MySettings Settings { get; private set; }
-
-        public void SaveUserSettings()
-        {
-            Settings.Save(_UserSettingsPath);
-        }
-    }
-}
+} 

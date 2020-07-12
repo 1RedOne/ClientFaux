@@ -16,6 +16,7 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using log4net;
+using System.Reflection;
 
 namespace CMFaux
 {
@@ -71,6 +72,17 @@ namespace CMFaux
             }
         }
 
+        public AppSettings Settings { get; private set; }
+        public const string UserSettingsFilename = "settings.json";
+        public string _DefaultSettingspath =
+            Assembly.GetEntryAssembly().Location +
+            "\\Settings\\" + UserSettingsFilename;
+
+        public string _UserSettingsPath =
+            Assembly.GetEntryAssembly().Location +
+            "\\Settings\\UserSettings\\" +
+            UserSettingsFilename;
+
         internal ObservableCollection<Device> Devices { get; set; } = new ObservableCollection<Device>();
 
         internal ObservableCollection<CustomClientRecord> CustomClientRecords { get; set; } = new ObservableCollection<CustomClientRecord> {
@@ -96,7 +108,10 @@ namespace CMFaux
             log4net.Config.XmlConfigurator.Configure();
             FilePath.Text = System.IO.Directory.GetCurrentDirectory();
             log.Info("In MainWindow.xaml");
-
+            if (File.Exists(_UserSettingsPath))
+                this.Settings = Settings.Read(_UserSettingsPath);
+            else
+                this.Settings = Settings.Read(_DefaultSettingspath);
             PasswordBox.Password = "Pa$$w0rd!";
             MaximumThreads.Text = "4";
             StartingNumber.Text = "1";
@@ -399,6 +414,14 @@ namespace CMFaux
             {
                 row.DetailsVisibility = row.IsSelected ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            log.Info("The form is now closing.");
+            log.Info("saving settings");
+            Settings.Save(_UserSettingsPath);
+            base.OnClosed(e);
         }
 
         private void InventoryCheck_Click(object sender, RoutedEventArgs e)
