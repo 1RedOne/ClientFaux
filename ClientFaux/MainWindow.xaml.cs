@@ -20,8 +20,7 @@ using System.Reflection;
 
 namespace CMFaux
 {
-
-    // to do : fix discovery 
+    // to do : fix discovery
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -36,7 +35,7 @@ namespace CMFaux
         public int MaxThreads { get; private set; }
 
         private string _calculatedClientsCount;
-        
+
         public string CalculatedClientsCount
         {
             get => _calculatedClientsCount;
@@ -49,6 +48,7 @@ namespace CMFaux
         }
 
         private int _idCounter;
+
         public int IdCounter
         {
             get => _idCounter;
@@ -61,6 +61,7 @@ namespace CMFaux
         }
 
         private int _DeviceCounter { get; set; }
+
         public int DeviceCounter
         {
             get => _DeviceCounter;
@@ -72,17 +73,6 @@ namespace CMFaux
             }
         }
 
-        public AppSettings Settings { get; private set; }
-        public const string UserSettingsFilename = "settings.json";
-        public string _DefaultSettingspath =
-            Assembly.GetEntryAssembly().Location +
-            "\\Settings\\" + UserSettingsFilename;
-
-        public string _UserSettingsPath =
-            Assembly.GetEntryAssembly().Location +
-            "\\Settings\\UserSettings\\" +
-            UserSettingsFilename;
-
         internal ObservableCollection<Device> Devices { get; set; } = new ObservableCollection<Device>();
 
         internal ObservableCollection<CustomClientRecord> CustomClientRecords { get; set; } = new ObservableCollection<CustomClientRecord> {
@@ -92,6 +82,7 @@ namespace CMFaux
         private static object _syncLock = new object();
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         protected virtual void OnPropertyChanged(string name)
         {
             var handler = System.Threading.Interlocked.CompareExchange(ref PropertyChanged, null, null);
@@ -108,14 +99,8 @@ namespace CMFaux
             log4net.Config.XmlConfigurator.Configure();
             FilePath.Text = System.IO.Directory.GetCurrentDirectory();
             log.Info("In MainWindow.xaml");
-            if (File.Exists(_UserSettingsPath))
-                this.Settings = Settings.Read(_UserSettingsPath);
-            else
-                this.Settings = Settings.Read(_DefaultSettingspath);
             PasswordBox.Password = "Pa$$w0rd!";
             MaximumThreads.Text = "4";
-            StartingNumber.Text = "1";
-            EndingNumber.Text = "20";
             DomainName = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
             Password = PasswordBox.Password.ToSecureString();
             BaseName = NewClientName.Text;
@@ -132,15 +117,10 @@ namespace CMFaux
             Counter.SetBinding(ContentProperty, new Binding("IdCounter"));
             DataContext = this;
             DeviceCounter = 0;
-            string logPath = String.Concat(Directory.GetCurrentDirectory() + "CMLog.log");
-            System.IO.FileStream myTraceLog = new System.IO.FileStream(logPath, System.IO.FileMode.OpenOrCreate);
 
-            // Creates the new trace listener.
-
-            System.Diagnostics.TextWriterTraceListener myListener = new System.Diagnostics.TextWriterTraceListener(myTraceLog);
-
-            Trace.Listeners.Add(myListener);
+            UpdateClientCount();
         }
+
         private void FireProgress(int thisIndex, string statusMessage, int percentageComplete)
         {
             Device ThisClient = Devices[thisIndex];
@@ -152,42 +132,52 @@ namespace CMFaux
                 case "CreatingCert...":
                     ThisClient.Status = "Creating Cert...";
                     break;
+
                 case "CertCreated":
                     ThisClient.ImageSource = "Images\\step02.png";
                     ThisClient.Status = "Registering...";
                     break;
+
                 case "Registering Client...":
                     ThisClient.ImageSource = "Images\\step02.png";
                     ThisClient.Status = "Starting Inventory...";
                     break;
+
                 case "Starting Inventory...":
                     ThisClient.ImageSource = "Images\\step02.png";
                     ThisClient.Status = "Starting Inventory...";
                     break;
+
                 case "SendingDiscovery":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Sending Discovery...";
                     break;
+
                 case "RequestingPolicy":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Requesting Policy...";
                     break;
+
                 case "SendingCustom":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Sending Custom DDRs..";
                     break;
+
                 case "Complete":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Complete!";
                     break;
+
                 case "ManagementPointErrorResponse...":
                     ThisClient.ImageSource = "Images\\step03.png";
                     ThisClient.Status = "Skipping!";
                     break;
+
                 default:
                     break;
             }
         }
+
         private void RegisterClient(int thisIndex)
         {
             GetWait();
@@ -220,12 +210,11 @@ namespace CMFaux
                 }
                 FireProgress(thisIndex, "ManagementPointErrorResponse...", 100);
                 return;
-
             }
             //SmsClientId clientId = FauxDeployCMAgent.RegisterClient(CmServer, ThisClient.Name, DomainName, myPath, Password);
 
             FireProgress(thisIndex, "Starting Inventory...", 50);
-            FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId, InventoryIsChecked);
+            FauxDeployCMAgent.SendDiscovery(CmServer, ThisClient.Name, DomainName, SiteCode, myPath, Password, clientId, log, InventoryIsChecked);
 
             FireProgress(thisIndex, "RequestingPolicy", 75);
             //FauxDeployCMAgent.GetPolicy(CMServer, SiteCode, myPath, Password, clientId);
@@ -274,13 +263,11 @@ namespace CMFaux
 
                         progress.Report(0);
                     });
-
             });
 
-            await myTask;            
-            
+            await myTask;
         }
-        
+
         public string ExportCert(X509Certificate2 newCert, string ThisClient, string FilePath)
         {
             string ExportPath = FilePath + "\\" + ThisClient + ".pfx";
@@ -296,7 +283,7 @@ namespace CMFaux
 
         private void CMServerName_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CmServer= CMServerName.Text;
+            CmServer = CMServerName.Text;
             if (CmServer.Length.Equals(0))
             {
                 CMSettingsStatusLabel.Content = "CM Settings: ❌";
@@ -319,6 +306,7 @@ namespace CMFaux
         {
             ExportPath = FilePath.Text;
         }
+
         private void Certificates_Click(object sender, RoutedEventArgs e)
         {
             TabControl.SelectedIndex = 1;
@@ -329,7 +317,7 @@ namespace CMFaux
             TabControl.SelectedIndex = 2;
         }
 
-        private void Inventory_Click (object sender, RoutedEventArgs e)
+        private void Inventory_Click(object sender, RoutedEventArgs e)
         {
             TabControl.SelectedIndex = 3;
         }
@@ -367,8 +355,16 @@ namespace CMFaux
             // If parsing is successful, set Handled to false
             e.Handled = !double.TryParse(fullText, out val);
         }
+
         private void textChangedEventHandler(object sender, TextChangedEventArgs args)
         {
+            UpdateClientCount();
+        }
+
+        private void UpdateClientCount()
+        {
+            if (null == EndingNumber) { return; }
+            if (null == NumberOfClients) { return; }
             if (StartingNumber.Text.Length.Equals(0) || EndingNumber.Text.Length.Equals(0))
             {
                 return;
@@ -420,7 +416,7 @@ namespace CMFaux
         {
             log.Info("The form is now closing.");
             log.Info("saving settings");
-            Settings.Save(_UserSettingsPath);
+            ClientFaux.Properties.Settings.Default.Save();
             base.OnClosed(e);
         }
 
@@ -438,6 +434,12 @@ namespace CMFaux
         private void viewLogs_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start($"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\ClientFaux.log");
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            ClientFaux.Properties.Settings.Default.Save();
+            base.OnClosing(e);
         }
     }
 }

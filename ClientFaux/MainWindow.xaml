@@ -3,33 +3,34 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:my="clr-namespace:CMFaux"
         xmlns:local="clr-namespace:CMFaux"
         mc:Ignorable="d"
-        Title="ClientFaux" Height="750" Width="725" Icon="Images\foxdeploy.ico" >
+        Title="ClientFaux" Height="750" Width="725" Icon="Images\foxdeploy.ico">
     <Grid>
-        
+
         <DockPanel>
             <Expander Name="Expander" Foreground="#FFF2EAEA" Background="#FF001741" BorderBrush="#FF1873BE" FontSize="14" HorizontalAlignment="Left" MinWidth="20">
                 <StackPanel HorizontalAlignment="Left">
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="✈ Ready..."  Name="ReadyButton" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="ReadyButton_Click" Width="119" />
-                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📜 Certificates"  Name="Certificates" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Certificates_Click" Width="119"/>
-                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📝 Device Naming" Name="DeviceNaming" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="DeviceNaming_Click"/>
-                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📄 Inventory" Name="Inventory" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Inventory_Click" Width="119"/>
+                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📜 Certificates"  Name="Certificates" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Certificates_Click" Width="119" />
+                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📝 Device Naming" Name="DeviceNaming" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="DeviceNaming_Click" />
+                    <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="📄 Inventory" Name="Inventory" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="Inventory_Click" Width="119" />
                     <Button MinHeight="40" Background="#FF001741" Foreground="#FFF2EAEA" Content="🌐 Configure CM"  Name="SCCMSettings" BorderBrush="#FF001741" HorizontalAlignment="Left" HorizontalContentAlignment="Left" Click="SCCMSettings_Click" />
                 </StackPanel>
             </Expander>
             <TabControl Name="TabControl" BorderBrush="White">
                 <TabControl.ItemContainerStyle>
                     <Style TargetType="{x:Type TabItem}">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Collapsed" />
                     </Style>
                 </TabControl.ItemContainerStyle>
                 <TabItem Name="BasePanel">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="250"/>
-                            <RowDefinition Height="250"/>
-                            <RowDefinition Height="500*"/>
+                            <RowDefinition Height="250" />
+                            <RowDefinition Height="250" />
+                            <RowDefinition Height="500*" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="550" />
@@ -40,30 +41,30 @@
                             <Label Name="CMSettingsStatusLabel" FontSize="16">CM Settings: ✔</Label>
                             <Label Name="DeviceNameStatusLabel" FontSize="16">Device Naming: ✔</Label>
                             <Label Name="PerformInventoryLabel" FontSize="16">Perform In-depth Discovery (Slower): ✔</Label>
-                            <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click"/>
-                            <Button Name="viewLogs2" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left"/>
+                            <Button Content="Ready..." MaxWidth="280px" HorizontalAlignment="Left" MinWidth="120px" Background="LawnGreen" Name="CreateClientsButton" Click="CreateClientsButton_Click" />
+                            <Button Name="viewLogs2" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left" />
                             <Label Name="ClientCount" FontSize="24">Device Count</Label>
-                            <TextBlock><Label Name="Counter" FontSize="24" Content="{Binding IdCounter}"/><Label FontSize="24">/</Label><Label Name="TotalCounter" FontSize="24" Content="{Binding CalculatedClientsCount}"/></TextBlock>
+                            <TextBlock><Label Name="Counter" FontSize="24" Content="{Binding IdCounter}" /><Label FontSize="24">/</Label><Label Name="TotalCounter" FontSize="24" Content="{Binding CalculatedClientsCount}" /></TextBlock>
                         </StackPanel>
                         <Expander Name="DeviceExpander" Grid.Row="2">
                             <ContentControl HorizontalAlignment="Left" Margin="10,0,0,0" MaxWidth="700" MaxHeight="500">
-                                    <DockPanel MaxHeight="500" >
-                                        <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500" ScrollViewer.CanContentScroll="True" 
+                                <DockPanel MaxHeight="500">
+                                    <DataGrid Name="dgDevices" AutoGenerateColumns="False" MaxHeight="500" ScrollViewer.CanContentScroll="True"
                                                   ScrollViewer.VerticalScrollBarVisibility="Auto">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" IsReadOnly="True" SortDirection="Descending"/>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" IsReadOnly="True" SortDirection="Descending" />
                                             <DataGridTemplateColumn Header="Percentage Complete" Width="2*" MaxWidth="300">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <ProgressBar Value="{Binding Path=ProcessProgress}" Minimum="0" Maximum="100" Foreground="#FF384FD2" Background="Azure"/>
+                                                        <ProgressBar Value="{Binding Path=ProcessProgress}" Minimum="0" Maximum="100" Foreground="#FF384FD2" Background="Azure" />
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                         </DataGrid.Columns>
                                         <DataGrid.ItemContainerStyle>
                                             <Style TargetType="DataGridRow">
-                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseDown"/>
+                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnMouseDown" />
                                             </Style>
                                         </DataGrid.ItemContainerStyle>
                                         <DataGrid.RowDetailsTemplate>
@@ -84,23 +85,23 @@
                                                         <TextBlock Text="{Binding Name}" Grid.Column="1" Grid.Row="1" />
                                                         <TextBlock Text="Client Status: " FontWeight="Bold" Grid.Row="2" />
                                                         <TextBlock Text="{Binding Status}" Grid.Column="1" Grid.Row="2" />
-                                                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding ProcessProgress}" MaxWidth="150px" Height="18" FlowDirection="LeftToRight"/>
+                                                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding ProcessProgress}" MaxWidth="150px" Height="18" FlowDirection="LeftToRight" />
                                                     </Grid>
                                                 </DockPanel>
                                             </DataTemplate>
                                         </DataGrid.RowDetailsTemplate>
                                     </DataGrid>
-                                    </DockPanel>
-                                </ContentControl>
-                            </Expander>
+                                </DockPanel>
+                            </ContentControl>
+                        </Expander>
                     </Grid>
                 </TabItem>
                 <TabItem Name="SettingsCerts">
                     <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="350*" />
-                        <ColumnDefinition Width="400*" />
-                    </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="350*" />
+                            <ColumnDefinition Width="400*" />
+                        </Grid.ColumnDefinitions>
                         <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" Margin="10">
                             <Label FontFamily="Calibri" FontSize="22px">Certificates</Label>
                             <TextBlock TextWrapping="WrapWithOverflow">ClientFaux needs to generate certificates to work, you can configure how it manages certs here</TextBlock>
@@ -117,14 +118,14 @@
                             <Label FontFamily="Calibri" FontSize="22px">Client Naming Settings</Label>
                             <TextBlock TextWrapping="WrapWithOverflow">ClientFaux can make one or many new clients in CM, provide some more info here</TextBlock>
                             <Label>Client Naming Pattern</Label>
-                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="NewClientName" TextChanged="NewClientName_TextChanged">BaseName</TextBox>
+                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="NewClientName" TextChanged="NewClientName_TextChanged" Text="{my:SettingBinding baseNamePtrn}"></TextBox>
                             <Label>Starting Number</Label>
-                            <TextBox ToolTip="The starting digit when making multiple clients, something like [10]." Name="StartingNumber" PreviewTextInput="TextBox_OnStartingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,10,0" TextChanged="textChangedEventHandler"></TextBox>
+                            <TextBox ToolTip="The starting digit when making multiple clients, something like [10]." Name="StartingNumber" PreviewTextInput="TextBox_OnStartingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,10,0" TextChanged="textChangedEventHandler" Text="{my:SettingBinding startingNo}"></TextBox>
                             <Label>Ending Number</Label>
-                            <TextBox ToolTip="The ending digit when making multiple clients, something like [20]." Name="EndingNumber" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="45px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="textChangedEventHandler"></TextBox>
+                            <TextBox ToolTip="The ending digit when making multiple clients, something like [20]." Name="EndingNumber" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="45px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="textChangedEventHandler" Text="{my:SettingBinding endingNo}"></TextBox>
                             <Label>Maximum Threads</Label>
                             <TextBox ToolTip="How many threads would you like to use?  Seven will max out even very beefy systems." Name="MaximumThreads" PreviewTextInput="TextBox_OnEndingButtonTextInput" Width="20px" HorizontalAlignment="Left" Margin="0,0,30,0" TextChanged="MaximumThreads_TextChanged"></TextBox>
-                            <Label>Number of Fake CM Clients to be created </Label>
+                            <Label>Number of Fake CM Clients to be created</Label>
                             <TextBlock Name="NumberOfClients" Foreground="#FF1053CD">Count will appear here</TextBlock>
                         </StackPanel>
                     </Grid>
@@ -147,7 +148,7 @@
                             <Button Content="Save" Margin="0,10,10,10" Width="80px" HorizontalAlignment="Left" Click="SaveButton_Click"></Button>
                             <DataGrid Name="dgInventory" AutoGenerateColumns="False" MaxHeight="500" MaxWidth="400" HorizontalAlignment="Left">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Property" Binding="{Binding RecordName}" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Property" Binding="{Binding RecordName}" IsReadOnly="True" />
                                     <DataGridTextColumn Header="Value" Binding="{Binding RecordValue}" IsReadOnly="True" />
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -164,17 +165,16 @@
                             <Label FontFamily="Calibri" FontSize="22px">ConfigMgr Settings</Label>
                             <TextBlock TextWrapping="WrapWithOverflow">ClientFaux needs some information about your ConfigMgr instance before we can get started.</TextBlock>
                             <Label>ConfigMgr Site Server Name</Label>
-                            <TextBox ToolTip="The FQDN of your CM Primary Site, something like [SCCM.FoxDeploy.com]" Name="CMServerName" TextChanged="CMServerName_TextChanged">SCCM.FoxDeploy.local</TextBox>
+                            <TextBox ToolTip="The FQDN of your CM Primary Site, something like [SCCM.FoxDeploy.com]" Name="CMServerName" TextChanged="CMServerName_TextChanged" Text="{my:SettingBinding cmServerName}"></TextBox>
                             <Label>ConfigMgr Site Code</Label>
-                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged">FOX</TextBox>
+                            <TextBox ToolTip="The three letter acronym of your CM Primary Site, something like [F0X]." Name="CMSiteCode" TextChanged="CMSiteCode_TextChanged" Text="{my:SettingBinding cmServerCode}"></TextBox>
                             <Label Margin="15,0,0,0">Throw error messages?</Label>
-                            <CheckBox Name="noisyCheck" Margin="15,0,0,0" Click="noisyCheck_Click"></CheckBox>
-                            <Button Name="viewLogs" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left"/>
+                            <CheckBox Name="noisyCheck" Margin="15,0,0,0" Click="noisyCheck_Click" IsChecked="{my:SettingBinding loudErrors}"></CheckBox>
+                            <Button Name="viewLogs" Margin="15,0,0,0" Click="viewLogs_Click" Content="View Log Files" MaxWidth="150" HorizontalAlignment="Left" />
                         </StackPanel>
                     </Grid>
                 </TabItem>
-                <Label Content="Label" Height="100" Width="100"/>
-
+                <Label Content="Label" Height="100" Width="100" />
             </TabControl>
         </DockPanel>
     </Grid>

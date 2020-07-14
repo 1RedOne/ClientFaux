@@ -18,11 +18,12 @@ using log4net;
 
 namespace CMFaux
 {
-    class FauxDeployCMAgent
+    internal class FauxDeployCMAgent
     {
         private static readonly HttpSender Sender = new HttpSender();
-        
-        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string CertPath, SecureString pass, ILog log) {
+
+        public static SmsClientId RegisterClient(string CMServerName, string ClientName, string DomainName, string CertPath, SecureString pass, ILog log)
+        {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
             {
                 // Create a registration request
@@ -32,14 +33,14 @@ namespace CMFaux
                 registrationRequest.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 // Set the destination hostname
                 registrationRequest.Settings.HostName = CMServerName;
-                
+
                 log.Info($"[{ClientName}] - Running Discovery...");
                 // Discover local properties for registration metadata
                 registrationRequest.Discover();
                 registrationRequest.AgentIdentity = "MyCustomClient";
                 registrationRequest.ClientFqdn = ClientName + "." + DomainName;
                 registrationRequest.NetBiosName = ClientName;
-                Console.WriteLine("About to try to register " + registrationRequest.ClientFqdn);
+                log.Info("About to try to register " + registrationRequest.ClientFqdn);
 
                 // Register client and wait for a confirmation with the SMSID
 
@@ -48,21 +49,19 @@ namespace CMFaux
                 log.Info($"[{ClientName}] - Message Zipped successfully, registering...");
                 SmsClientId clientId = registrationRequest.RegisterClient(Sender, TimeSpan.FromMinutes(5));
                 log.Info($"[{ClientName}] - Got SMSID from CM Server for this client of {clientId}...");
-                Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
                 return clientId;
             }
         }
 
-        
         public static void SendDiscovery(string CMServerName, string clientName, string domainName, string SiteCode,
-            string CertPath, SecureString pass, SmsClientId clientId, bool enumerateAndAddCustomDdr = false)
+            string CertPath, SecureString pass, SmsClientId clientId, ILog log, bool enumerateAndAddCustomDdr = false)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
 
             {
                 //X509Certificate2 thisCert = new X509Certificate2(CertPath, pass);
 
-                Console.WriteLine(@"Got SMSID from registration of: {0}", clientId);
+                log.Info($"Got SMSID from registration of: {clientId}");
 
                 // create base DDR Message
                 ConfigMgrDataDiscoveryRecordMessage ddrMessage = new ConfigMgrDataDiscoveryRecordMessage
@@ -75,9 +74,7 @@ namespace CMFaux
                     NetBiosName = clientName
                 };
 
-
-                
-                ddrMessage.Discover();                
+                ddrMessage.Discover();
                 // Add our certificate for message signing
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing);
                 ddrMessage.AddCertificateToMessage(certificate, CertificatePurposes.Encryption);
@@ -125,27 +122,27 @@ namespace CMFaux
                 //hinvMessage.Settings.Security.EncryptMessage = true;
                 hinvMessage.Discover();
 
-                var Classes = CMFauxStatusViewClasses.GetWMIClasses();                
+                var Classes = CMFauxStatusViewClasses.GetWMIClasses();
                 foreach (string Class in Classes)
                 {
                     try { hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2", Class)); }
-                    catch { Console.WriteLine($"!!!Adding class : [{Class}] :( not found on this system"); }
+                    catch { log.Info($"!!!Adding class : [{Class}] :( not found on this system"); }
                 }
 
                 var SMSClasses = new List<string> { "SMS_Processor", "CCM_System", "SMS_LogicalDisk" };
                 foreach (string Class in SMSClasses)
                 {
-
-                    Console.WriteLine($"---Adding class : [{Class}]");
+                    log.Info($"---Adding class : [{Class}]");
                     try { hinvMessage.AddInstancesToInventory(WmiClassToInventoryReportInstance.WmiClassToInventoryInstances(@"root\cimv2\sms", Class)); }
-                    catch { Console.WriteLine($"!!!Adding class : [{Class}] :( not found on this system"); }
-                }                
+                    catch { log.Info($"!!!Adding class : [{Class}] :( not found on this system"); }
+                }
 
                 hinvMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
                 hinvMessage.Validate(Sender);
                 hinvMessage.SendMessage(Sender);
             };
         }
+
         public static void SendCustomDiscovery(string CMServerName, string ClientName, string SiteCode, string FilePath, ObservableCollection<CustomClientRecord> customClientRecords)
         {
             string ddmLocal = FilePath + "\\DDRS\\" + ClientName;
@@ -153,7 +150,8 @@ namespace CMFaux
 
             DiscoveryDataRecordFile ddrF = new DiscoveryDataRecordFile("ClientFaux")
             {
-                SiteCode = SiteCode, Architecture = "System"
+                SiteCode = SiteCode,
+                Architecture = "System"
             };
             ddrF.AddStringProperty("Name", DdmDiscoveryFlags.Key, 32, ClientName);
             ddrF.AddStringProperty("Netbios Name", DdmDiscoveryFlags.Name, 16, ClientName);
@@ -162,17 +160,17 @@ namespace CMFaux
             {
                 ddrF.AddStringProperty(Record.RecordName, DdmDiscoveryFlags.None, 32, Record.RecordValue);
             }
-            
+
             System.IO.Directory.CreateDirectory(ddmLocal);
             DirectoryInfo di = new DirectoryInfo(ddmLocal);
             ddrF.SerializeToFile(ddmLocal);
 
             FileInfo file = di.GetFiles().FirstOrDefault();
-            
+
             File.Copy(file.FullName, CMddmInbox, true);
             System.IO.Directory.Delete(ddmLocal, true);
-
         }
+
         public static void GetPolicy(string CMServerName, string SiteCode, string CertPath, SecureString pass, SmsClientId clientId)
         {
             using (MessageCertificateX509Volatile certificate = new MessageCertificateX509Volatile(CertPath, pass))
@@ -185,14 +183,13 @@ namespace CMFaux
                     ResourceType = PolicyAssignmentResourceType.User,
                     SmsId = clientId,
                     SiteCode = SiteCode
-
                 };
-                 userPolicyMessage.Settings.HostName = CMServerName;
-                 userPolicyMessage.Settings.Security.AuthenticationScheme = AuthenticationScheme.Ntlm;
+                userPolicyMessage.Settings.HostName = CMServerName;
+                userPolicyMessage.Settings.Security.AuthenticationScheme = AuthenticationScheme.Ntlm;
                 userPolicyMessage.Settings.Security.AuthenticationType = AuthenticationType.WindowsAuth;
-                
+
                 userPolicyMessage.AddCertificateToMessage(certificate, CertificatePurposes.Signing | CertificatePurposes.Encryption);
-                
+
                 userPolicyMessage.Discover();
                 userPolicyMessage.Settings.Security.EncryptMessage = true;
                 userPolicyMessage.Settings.ReplyCompression = (true == replyCompression) ? MessageCompression.Zlib : MessageCompression.None;
@@ -211,8 +208,8 @@ namespace CMFaux
                 machinePolicyMessage.Discover();
                 //machinePolicyMessage.SendMessage(Sender);
             }
-
         }
+
         public static X509Certificate2 CreateSelfSignedCertificate(string subjectName)
         {
             // create DN for subject and issuer
@@ -238,7 +235,7 @@ namespace CMFaux
             // add extended key usage if you want - look at MSDN for a list of possible OIDs
             var oid = new CObjectId();
             oid.InitializeFromValue("1.3.6.1.5.5.7.3.1"); // SSL server
-            var oidlist = new CObjectIds {oid};
+            var oidlist = new CObjectIds { oid };
             var eku = new CX509ExtensionEnhancedKeyUsage();
             eku.InitializeEncode(oidlist);
 
@@ -273,6 +270,5 @@ namespace CMFaux
                 System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.Exportable
             );
         }
-    }   
+    }
 }
-

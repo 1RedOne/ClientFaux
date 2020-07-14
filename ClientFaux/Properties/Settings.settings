@@ -1,7 +1,27 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ClientFaux.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="cmServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SCCM.FoxDeploy.local</Value>
+    </Setting>
+    <Setting Name="cmServerCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FOX</Value>
+    </Setting>
+    <Setting Name="baseNamePtrn" Type="System.String" Scope="User">
+      <Value Profile="(Default)">BaseName</Value>
+    </Setting>
+    <Setting Name="startingNo" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="endingNo" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
+    </Setting>
+    <Setting Name="loudErrors" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="indepthInventory" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

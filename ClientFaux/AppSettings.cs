@@ -1,36 +1,24 @@
-
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 namespace CMFaux
 {
-    public class AppSettings
+    public class SettingBindingExtension : Binding
     {
-        public string cmServerName { get; set; }
-        public string cmServerCode { get; set; }
-        public string baseNamePtrn { get; set; }
-
-        public void Save(string filename)
+        public SettingBindingExtension()
         {
-            string json = JsonConvert.SerializeObject(this);
-
-            //write string to file
-            System.IO.File.WriteAllText(filename, json);
+            Initialize();
         }
 
-        public AppSettings Read(string filename)
+        public SettingBindingExtension(string path)
+            : base(path)
         {
-            var items = new AppSettings();
-            using (StreamReader r = new StreamReader(filename))
-            {
-                string json = r.ReadToEnd();
-                items = JsonConvert.DeserializeObject<AppSettings>(json);
-            }
-            return items;
+            Initialize();
+        }
 
+        private void Initialize()
+        {
+            this.Source = ClientFaux.Properties.Settings.Default;
+            this.Mode = BindingMode.TwoWay;
         }
     }
 } 
