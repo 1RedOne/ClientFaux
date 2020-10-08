@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientFaux", "ClientFaux\ClientFaux.csproj", "{A38F19D6-53D1-45B2-A40A-27CE08A1927E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientFaux", "src\ClientFaux\ClientFaux.csproj", "{A38F19D6-53D1-45B2-A40A-27CE08A1927E}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{BBBE2700-83DA-4E8B-8C00-2565DA44BF8A}"
 EndProject
