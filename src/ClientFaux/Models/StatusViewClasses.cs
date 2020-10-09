@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 
 namespace CMFaux
 {
-    public class CMFauxStatusViewClasses
+    public partial class CMFauxStatusViewClasses
     {
         public static List<String> GetWMIClasses()
         {
@@ -25,98 +25,31 @@ namespace CMFaux
                     /*"Win32_LogicalDisk",*//*"Win32_Processor",*//*"Win32_SystemDevices",*//*"Win32_Product","Win32_PnpEntity"*/
                 };
         }
+
         public static string GetOSRealVersionInfo()
-        {        
+        {
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
                 Path.Combine(
                     System.Environment.GetFolderPath(System.Environment.SpecialFolder.System),
                     "kernel32.dll"));
             return fvi.ProductVersion;
         }
-        
-        public class CustomClientRecord
-        {
-            public string RecordName { get; set; }
-            public string RecordValue { get; set; }
-        }
-
-        public enum Statuses
-        {
-            [Description("Creating Certificate")]
-            CreateCert = 1,
-            [Description("Registering Client")]
-            RegisteringClient = 2,
-            [Description("Sending Discovery")]
-            SendingDiscovery = 3
-        }       
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public class Device : INotifyPropertyChanged
-        {
-            private string s;
-            private string i;
-            private int p;
-            public string Name { get; set; }
-
-            public string Status {
-                get { return s; }
-                set
-                {
-                    s = value;
-                    // Call OnPropertyChanged whenever the property is updated
-                    OnPropertyChanged("Status");
-                }
-            
-            }
-            public string ImageSource
-            {
-                get { return i; }
-                set
-                {
-                    i = value;
-                    // Call OnPropertyChanged whenever the property is updated
-                    OnPropertyChanged("ImageSource");
-                }
-
-            }
-
-            public int ProcessProgress
-            {
-                get { return p; }
-                set
-                {
-                    p = value;
-                    // Call OnPropertyChanged whenever the property is updated
-                    OnPropertyChanged("ProcessProgress");
-                }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-            protected void OnPropertyChanged(string name)
-            {
-                PropertyChangedEventHandler handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(name));
-                }
-            }
-        }
-
         // used to rewrite the OS property reported to CM
         [XmlRoot("CCM_DiscoveryData")] // Must define an XmlRoot that represents the class name
         public sealed class CMFauxStatusViewClassesFixedOSRecord : InventoryInstanceElement
-        {            
-
-            
+        {
             [XmlElement]
             public string PlatformId { get; set; }
-                        
+
             protected override void DiscoverSelf()
             {
                 base.DiscoverSelf();
@@ -131,7 +64,4 @@ namespace CMFaux
             }
         }
     }
-
-
-
 }

@@ -100,8 +100,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AppSettings.cs" />
-    <Compile Include="StatusViewClasses.cs" />
+    <Compile Include="Models\AppSettings.cs" />
+    <Compile Include="Models\CustomClientRecord.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\StatusEnum.cs" />
+    <Compile Include="Models\StatusViewClasses.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -110,7 +113,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FauxDeployCMAgent.cs" />
+    <Compile Include="Models\FauxDeployCMAgent.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -140,6 +143,7 @@
     <Content Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Models\.editorconfig" />
     <None Include="packages.config" />
     <None Include="Properties\LICENSE">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

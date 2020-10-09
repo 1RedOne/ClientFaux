@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.IO;
 using System.ComponentModel;
 using static CMFaux.CMFauxStatusViewClasses;
+using static CMFaux.Models;
 using System.Collections.ObjectModel;
 using Microsoft.ConfigurationManagement.Messaging.Framework;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ using System.Security;
 using System.Threading.Tasks;
 using log4net;
 using System.Reflection;
+using static ClientFaux.Models.Models;
 
 namespace CMFaux
 {
-    // to do : fix discovery
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

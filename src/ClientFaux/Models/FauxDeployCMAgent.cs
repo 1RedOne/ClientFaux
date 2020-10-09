@@ -1,19 +1,23 @@
-﻿using Microsoft.ConfigurationManagement.Messaging.Framework;
+﻿using static CMFaux.Models;
+using static CMFaux.CMFauxStatusViewClasses;
+
+using Microsoft.ConfigurationManagement.Messaging.Framework;
 using Microsoft.ConfigurationManagement.Messaging.Messages;
+using Microsoft.ConfigurationManagement.Messaging.Messages.Server;
 using Microsoft.ConfigurationManagement.Messaging.Sender.Http;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Diagnostics;
-using static CMFaux.CMFauxStatusViewClasses;
-using Microsoft.ConfigurationManagement.Messaging.Messages.Server;
+
 using System.IO;
-using CERTENROLLLib;
 using System.Collections.ObjectModel;
 using System.Management;
 using System.Security;
 using System.Xml;
+using CERTENROLLLib;
 using log4net;
 
 namespace CMFaux
