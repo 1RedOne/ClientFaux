@@ -206,7 +206,7 @@ namespace CMFaux
                 if (noisy)
                 {
                     System.Windows.MessageBox.Show(" We failed with " + e.Message);
-                    throw e;
+                    throw;
                 }
                 FireProgress(thisIndex, "ManagementPointErrorResponse...", 100);
                 return;
