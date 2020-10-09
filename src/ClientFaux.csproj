@@ -188,5 +188,8 @@
   <ItemGroup>
     <Resource Include="Images\foxdeploy.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
